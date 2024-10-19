@@ -1,0 +1,35 @@
+# Node modules
+node_modules/
+
+# Dependencias de producción
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración del IDE
+.vscode/
+.idea/
+
+# Archivos de configuración de env
+.env
+
+# Archivos de base de datos locales (Si estás usando SQLite por ejemplo)
+*.sqlite
+
+# Archivos de logs
+*.log
+
+# Carpeta de pruebas o de build si las tienes
+/dist/
+.build/
+
+# Archivos temporales de compilación o cachés
+tmp/
+*.temp
+
+# Archivos de Sequelize si estás generando migraciones, etc.
+*.sequelize
