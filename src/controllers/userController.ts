@@ -13,20 +13,34 @@ export const getUsers = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
   const { name, email,password,username,favouritegenders  } = req.body;
+
   try {
-    const existingUser = await User.findOne({ where: { email } });
-    if (existingUser) {
+    const existingUserByEmail = await User.findOne({ where: { email } });
+    if (existingUserByEmail) {
       res.status(400).json({ error: "Email is already registered" });
       return;
     }
+
+    const existingUserByUsername = await User.findOne({ where: { username } });
+    if (existingUserByUsername) {
+      res.status(400).json({ error: "Username is already taken" });
+      return;
+    }
+
+    const defaultBio = "Bienvenido a mi perfil";
+    const defaultProfilePhoto = "https://firebasestorage.googleapis.com/v0/b/buena-leida.appspot.com/o/profiles%2Fdefault.jpg?alt=media&token=100a1fe2-fd46-4fc5-9d11-e7b78ed946f5";
+    const favouritegendersArray = Array.isArray(favouritegenders) ? favouritegenders : [favouritegenders];
 
     const newUser = await User.create({
       name,
       email,
       password,
       username,
-      favouritegenders,
+      favouritegenders: favouritegendersArray,  
+      bio: defaultBio,
+      profilePhoto: defaultProfilePhoto
     });
+
     //para probar:
     res.json({
       id: newUser.id,
@@ -34,14 +48,13 @@ export const createUser = async (req: Request, res: Response) => {
       email: newUser.email,
       username: newUser.username,
       favouritegenders: newUser.favouritegenders,
-      fotoPerfil: newUser.fotoPerfil,
-      biografia: newUser.biografia
+      fotoPerfil: newUser.profilePhoto,
+      biografia: newUser.bio,
     });
-    return;
+    
   } catch (error) {
     console.error("Error during user creation:", error);
     res.status(500).json({ error: "Error creating user" });
-    return;
   }
 };
 

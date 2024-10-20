@@ -27,4 +27,5 @@ sequelize
   })
   .catch((error) => {
     console.error("Unable to sync database:", error);
-  });
+    
+});

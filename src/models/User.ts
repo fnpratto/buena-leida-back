@@ -8,8 +8,8 @@ class User extends Model {
   public password!: string;
   public username!: string;
   public favouritegenders!: string;
-  public fotoPerfil?: string; 
-  public biografia?: string;  
+  public profilePhoto?: string; 
+  public bio?: string;  
 }
 
 User.init(
@@ -38,22 +38,25 @@ User.init(
       unique: true, 
     },
     favouritegenders: {
-      type: DataTypes.STRING,
+      type: DataTypes.ARRAY(DataTypes.STRING), 
       allowNull: false,
     },
-    fotoPerfil: {
+
+    profilePhoto: {
       type: DataTypes.STRING, 
       allowNull: true,
+      defaultValue: "https://firebasestorage.googleapis.com/v0/b/buena-leida.appspot.com/o/profiles%2Fdefault.jpg?alt=media&token=100a1fe2-fd46-4fc5-9d11-e7b78ed946f5",
     },
-    biografia: {
-      type: DataTypes.TEXT, 
-      allowNull: true, 
+    bio: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      defaultValue: "Bienvenido a mi perfil",
     },
   }, 
   {
     sequelize,
     modelName: "User",
-//    timestamps: false,
+//  timestamps: false,
     tableName: "users",
     hooks: {
       beforeUpdate: (user) => {
