@@ -79,3 +79,33 @@ export const loginUser = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Error logging in user" });
   }
 };
+
+export const editUser = async (req: Request, res: Response) => {
+  const { name, email, favouritegenders } = req.body;
+
+  if (!name || !email || !favouritegenders) {
+    res.status(400).json({ error: "Campos vacíos" });
+    return;
+  }
+
+    // validar formato email
+
+  try {
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      res.status(404).json({ error: "Usuario no encontrado" });
+      return;
+    }
+
+    await user.update({
+      name: name,
+      email: email,
+      favouritegenders: favouritegenders
+    });
+
+    res.json({ message: "Usuario actualizado exitosamente", user });
+
+  } catch (error) {
+    res.status(500).json({ error: "Error al editar usuario" });
+  }
+};
