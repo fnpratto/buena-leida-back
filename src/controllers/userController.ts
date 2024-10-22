@@ -1,6 +1,29 @@
 import { Request, Response } from "express";
 import User from "../models/User";
 
+export const checkUserExists = async (req: Request, res: Response) => {
+  const { email, username } = req.body;
+
+  try {
+    const existingUserByEmail = await User.findOne({ where: { email } });
+    if (existingUserByEmail) {
+      res.status(400).json({ error: "Email ya registrado." });
+      return;
+    }
+
+    const existingUserByUsername = await User.findOne({ where: { username } });
+    if (existingUserByUsername) {
+      res.status(409).json({ error: "Nombre de usuario tomado." });
+      return;
+    }
+
+    res.json();
+  } catch (error) {
+    res.status(500).json({ error: "Error validando inputs" });
+    return;
+  }
+};
+
 export const getUsers = async (req: Request, res: Response) => {
   try {
     const users = await User.findAll();
@@ -12,7 +35,7 @@ export const getUsers = async (req: Request, res: Response) => {
 };
 
 export const createUser = async (req: Request, res: Response) => {
-  const { name, email,password,username,favouritegenders  } = req.body;
+  const { name, email, password, username, favouritegenders } = req.body;
 
   try {
     const existingUserByEmail = await User.findOne({ where: { email } });
@@ -28,17 +51,20 @@ export const createUser = async (req: Request, res: Response) => {
     }
 
     const defaultBio = "Bienvenido a mi perfil";
-    const defaultProfilePhoto = "https://firebasestorage.googleapis.com/v0/b/buena-leida.appspot.com/o/profiles%2Fdefault.jpg?alt=media&token=100a1fe2-fd46-4fc5-9d11-e7b78ed946f5";
-    const favouritegendersArray = Array.isArray(favouritegenders) ? favouritegenders : [favouritegenders];
+    const defaultProfilePhoto =
+      "https://firebasestorage.googleapis.com/v0/b/buena-leida.appspot.com/o/profiles%2Fdefault.jpg?alt=media&token=100a1fe2-fd46-4fc5-9d11-e7b78ed946f5";
+    const favouritegendersArray = Array.isArray(favouritegenders)
+      ? favouritegenders
+      : [favouritegenders];
 
     const newUser = await User.create({
       name,
       email,
       password,
       username,
-      favouritegenders: favouritegendersArray,  
+      favouritegenders: favouritegendersArray,
       bio: defaultBio,
-      profilePhoto: defaultProfilePhoto
+      profilePhoto: defaultProfilePhoto,
     });
 
     //para probar:
@@ -51,13 +77,11 @@ export const createUser = async (req: Request, res: Response) => {
       fotoPerfil: newUser.profilePhoto,
       biografia: newUser.bio,
     });
-    
   } catch (error) {
     console.error("Error during user creation:", error);
     res.status(500).json({ error: "Error creating user" });
   }
 };
-
 
 export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -88,7 +112,7 @@ export const editUser = async (req: Request, res: Response) => {
     return;
   }
 
-    // validar formato email
+  // validar formato email
 
   try {
     const user = await User.findOne({ where: { email } });
@@ -100,11 +124,10 @@ export const editUser = async (req: Request, res: Response) => {
     await user.update({
       name: name,
       email: email,
-      favouritegenders: favouritegenders
+      favouritegenders: favouritegenders,
     });
 
     res.json({ message: "Usuario actualizado exitosamente", user });
-
   } catch (error) {
     res.status(500).json({ error: "Error al editar usuario" });
   }
