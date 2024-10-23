@@ -132,3 +132,63 @@ export const editUser = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Error al editar usuario" });
   }
 };
+
+export const updateName = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { name } = req.body;
+
+  try {
+    const user = await User.findByPk(id);
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    user.name = name;
+    await user.save();
+
+    res.json({ message: "Name updated successfully", user });
+  } catch (error) {
+    res.status(500).json({ error: "Error updating name" });
+  }
+};
+
+export const updateProfilePhoto = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { profilePhoto } = req.body;
+
+  try {
+    const user = await User.findByPk(id);
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    user.profilePhoto = profilePhoto;
+    await user.save();
+
+    res.json({ message: "Profile photo updated successfully", user });
+  } catch (error) {
+    res.status(500).json({ error: "Error updating profile photo" });
+  }
+};
+
+export const updateBio = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { bio } = req.body;
+
+  try {
+    const user = await User.findByPk(id);
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    user.bio = bio;
+    await user.save();
+
+    res.json({ message: "Bio updated successfully", user });
+  } catch (error) {
+    res.status(500).json({ error: "Error updating bio" });
+  }
+};

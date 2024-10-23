@@ -3,10 +3,19 @@ import dotenv from "dotenv";
 import sequelize from "./config/db";
 import userRoutes from "./routes/userRoutes";
 import bookRoutes from "./routes/bookRoutes";
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PATCH", "OPTIONS", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 app.use(express.json());
 
@@ -27,5 +36,4 @@ sequelize
   })
   .catch((error) => {
     console.error("Unable to sync database:", error);
-    
-});
+  });
