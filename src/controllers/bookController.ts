@@ -24,9 +24,10 @@ export const getBookById = async (req: Request, res: Response) => {
       title: book.title,
       author: book.author,
       coverimage: book.coverimage || "default-cover.jpg",
+      publication_date: book.publication_date,
       genre: book.genre,
       summary: book.summary || "none",
-      reviews: book.reviews || [],
+      number_reviews: book.number_reviews || 0,
       averagerating: book.averagerating,
     });
 
@@ -37,17 +38,18 @@ export const getBookById = async (req: Request, res: Response) => {
 
 
 export const createBook = async (req: Request, res: Response) => {
-  const { title, author, coverimage, genre, summary, averagerating, reviews } = req.body;
+  const { title, author, coverimage,publication_date, genre, summary, averagerating, number_reviews } = req.body;
 
   try {
     const newBook = await Book.create({
       title,
       author,
       coverimage,
+      publication_date,
       genre,
       summary,
       averagerating,
-      reviews,
+      number_reviews,
     });
 
     res.status(201).json(newBook);
