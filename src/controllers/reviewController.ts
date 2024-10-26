@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { Review, Book } from "../models";
+import Like from "../models/Like";
 import User from "../models/User";
 
 
@@ -38,8 +39,8 @@ export const createReview = async (req: Request, res: Response) => {
     const updatedRating = ((book.averagerating * book.numberreviews) + calification) / totalReviews;
 
     await book.update({
-      cantidad_reseñas: totalReviews,
-      promedio_calification: updatedRating,
+      numberreviews: totalReviews,
+      averagerating: updatedRating,
     });
 
     res.status(201).json(newReview);
@@ -100,4 +101,47 @@ export const deleteReview = async (req: Request, res: Response) => {
       console.error("Error deleting review:", error);
       res.status(500).json({ message: "Error deleting review", error });
     }
-  };
+};
+
+export const toggleLike = async (req: Request, res: Response) => {
+
+  try {
+    const reviewId = req.params.id;
+    const userId = 1; //TO-DO , NO SE COMO MANEJAR EL USUARIO SE LO  MANDO POR ENDPOINT?
+
+    const review = await Review.findByPk(reviewId);
+    if (!review) {
+      return res.status(404).json({ error: 'Review not found.' });
+    }
+
+    const existingLike = await Like.findOne({
+      where: { userId, reviewId }
+    });
+
+    if (existingLike) {
+      await existingLike.destroy();
+      review.likes = Math.max(0, review.likes - 1); 
+      await review.save();
+
+      return res.json({ 
+        message: 'Review unliked.', 
+        liked: false, 
+        likes: review.likes 
+      });
+    } else {
+      await Like.create({ userId, reviewId });
+      review.likes += 1;
+      await review.save();
+
+      return res.json({ 
+        message: 'Review liked.', 
+        liked: true, 
+        likes: review.likes 
+      });
+    }
+  } catch (error) {
+    console.error("Error toggling like:", error);
+    res.status(500).json({ message: "Error toggling like.", error });
+  }
+
+};
