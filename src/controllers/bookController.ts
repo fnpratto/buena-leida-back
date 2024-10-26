@@ -27,7 +27,7 @@ export const getBookById = async (req: Request, res: Response) => {
       publication_date: book.publication_date,
       genre: book.genre,
       summary: book.summary || "none",
-      number_reviews: book.number_reviews || 0,
+      numberreviews: book.numberreviews || 0,
       averagerating: book.averagerating,
     });
 
@@ -38,19 +38,26 @@ export const getBookById = async (req: Request, res: Response) => {
 
 
 export const createBook = async (req: Request, res: Response) => {
-  const { title, author, coverimage,publication_date, genre, summary, averagerating, number_reviews } = req.body;
+  const { id,title, author, coverimage,publication_date, genre, summary, averagerating,numberreviews } = req.body;
+
+  if (!id || !title || !author || !publication_date || !genre || !summary) {
+    res.status(400).json({ message: "Title, author, publication date, genre, and summary are required." });
+    return;
+  }
 
   try {
     const newBook = await Book.create({
+      id,
       title,
       author,
-      coverimage,
+      coverimage: coverimage || "default-cover.jpg",
       publication_date,
       genre,
       summary,
-      averagerating,
-      number_reviews,
-    });
+      averagerating: averagerating || 0.0, 
+      numberreviews: numberreviews || 0,
+      
+    })
 
     res.status(201).json(newBook);
   } catch (error) {

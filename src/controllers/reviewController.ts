@@ -1,35 +1,46 @@
 import { Request, Response } from "express";
-import Review from "../models/Review"; 
-import Libro from "../models/Book"; 
+import { Review, Book } from "../models";
+import User from "../models/User";
 
 
 export const createReview = async (req: Request, res: Response) => {
-  const { ISBN, texto, iduser,calificación } = req.body; 
+  const { isbn, texto, iduser,calification } = req.body; 
 
-  if (!calificación || calificación < 1 || calificación > 5) {
-    return res.status(400).json({ message: "La calificación es obligatoria y debe estar entre 1 y 5 estrellas" });
+  if (!calification || calification < 1 || calification > 5) {
+    res.status(400).json({ message: "La calificación es obligatoria y debe estar entre 1 y 5 estrellas" });
+    return;
   }
 
 
   try {
+    const id = isbn
+    const book = await Book.findOne({ where: { id } });
+    if (!book) {
+      res.status(404).json({ message: "El libro no existe" });
+      return;
+    }
+
+    const user = await User.findByPk(iduser);
+    if (!user) {
+      res.status(404).json({ message: "El usuario no existe" });
+      return;
+    }
+
     const newReview = await Review.create({
-      ISBN,
+      isbn,
       texto,
       likes: 0,
-      calificación,
+      calification,
       iduser
     });
 
-    const libro = await Libro.findByPk(ISBN);
-    if (libro) {
-      const totalReviews = libro.numberreviews + 1;
-      const updatedRating = ((libro.averagerating * libro.numberreviews) + calificación) / totalReviews;
+    const totalReviews = book.numberreviews + 1;
+    const updatedRating = ((book.averagerating * book.numberreviews) + calification) / totalReviews;
 
-      await libro.update({
-        cantidad_reseñas: totalReviews,
-        promedio_calificación: updatedRating,
-      });
-    }
+    await book.update({
+      cantidad_reseñas: totalReviews,
+      promedio_calification: updatedRating,
+    });
 
     res.status(201).json(newReview);
   } catch (error) {
@@ -40,13 +51,21 @@ export const createReview = async (req: Request, res: Response) => {
 
 
 export const getReviewsByISBN = async (req: Request, res: Response) => {
-  const { ISBN } = req.params;
+  const { isbn } = req.params;
+
+  if (!isbn) {
+    res.status(400).json({ message: "ISBN is required to fetch reviews" });
+    return;
+  }
+
+  console.log("Fetching reviews for ISBN:", isbn); 
 
   try {
-    const reviews = await Review.findAll({ where: { ISBN } });
+    const reviews = await Review.findAll({ where: { isbn } });
 
     if (reviews.length === 0) { 
-      return res.status(404).json({ message: "No reviews found for this book" });
+      res.status(404).json({ message: "No reviews found for this book" });
+      return;
     }
 
     res.status(200).json(reviews);
@@ -63,16 +82,17 @@ export const deleteReview = async (req: Request, res: Response) => {
     try {
       const review = await Review.findByPk(id);
       if (!review) {
-        return res.status(404).json({ message: "Review not found" });
+        res.status(404).json({ message: "Review not found" });
+        return;
       }
   
-      const ISBN = review.ISBN; 
+      const isbn = review.isbn; 
 
       await review.destroy(); 
 
-      await Libro.decrement('cantidad_reseñas', {
+      await Book.decrement('cantidad_reseñas', {
         by: 1,
-        where: { ISBN },
+        where: { isbn },
       });
   
       res.status(204).send(); 

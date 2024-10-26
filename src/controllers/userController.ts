@@ -64,7 +64,7 @@ export const createUser = async (req: Request, res: Response) => {
       username,
       favouritegenders: favouritegendersArray,
       bio: defaultBio,
-      profilePhoto: defaultProfilePhoto,
+      profilephoto: defaultProfilePhoto,
     });
 
     //para probar:
@@ -74,7 +74,7 @@ export const createUser = async (req: Request, res: Response) => {
       email: newUser.email,
       username: newUser.username,
       favouritegenders: newUser.favouritegenders,
-      fotoPerfil: newUser.profilePhoto,
+      fotoPerfil: newUser.profilephoto,
       biografia: newUser.bio,
     });
   } catch (error) {
@@ -164,7 +164,7 @@ export const updateProfilePhoto = async (req: Request, res: Response) => {
       return;
     }
 
-    user.profilePhoto = profilePhoto;
+    user.profilephoto = profilePhoto;
     await user.save();
 
     res.json({ message: "Profile photo updated successfully", user });

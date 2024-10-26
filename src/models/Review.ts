@@ -1,19 +1,14 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/db";
-import Book from "./Book";
 
 class Review extends Model {
   public id!: number;
   public iduser!: number;
-  public ISBN!:number;
+  public isbn!:number;
   public texto?: string;
   public likes!: number;
-  public calificación!: number;
+  public calification!: number;
 }
-
-Review.belongsTo(Book, {
-    foreignKey: 'ISBN',
-  });
 
 Review.init(
   {
@@ -26,7 +21,7 @@ Review.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    ISBN: {
+    isbn: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -39,7 +34,7 @@ Review.init(
       allowNull: false,
       defaultValue: 0, 
     },
-    calificación: {
+    calification: {
       type: DataTypes.FLOAT,
       allowNull: false,
     },

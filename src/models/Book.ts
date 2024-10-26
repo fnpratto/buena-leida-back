@@ -1,6 +1,5 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/db";
-import Review from "./Review";
 
 class Book extends Model {
   public id!: number;
@@ -14,18 +13,12 @@ class Book extends Model {
   public numberreviews!: number; 
 }
 
-
-Book.hasMany(Review, {
-  foreignKey: 'ISBN', 
-  onDelete: 'CASCADE',
-});
-
-
 Book.init(
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true, 
     },
     title: {
       type: DataTypes.STRING,
@@ -57,16 +50,10 @@ Book.init(
       allowNull: false,
       defaultValue: 0.0,
     },
-    reviews: {
-      type: DataTypes.ARRAY(DataTypes.TEXT),
-      allowNull: true,
-      defaultValue: []
-    },
     numberreviews: {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
-      autoIncrement: true,
     }
   },
   {
