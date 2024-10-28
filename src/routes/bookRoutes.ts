@@ -5,7 +5,8 @@ import {
     getBookById,
     getBookByTitleAndAuthor,
     getBookByAuthor,
-    getBookByName
+    getBookByName,
+    getRatingsCountByISBN
 } from "../controllers/bookController";
 
 const router = Router();
@@ -16,5 +17,8 @@ router.get('/:title/:author', getBookByTitleAndAuthor);
 router.get('/:title', getBookByName);
 router.get('/:author', getBookByAuthor);
 router.post("/", createBook);
+
+router.get('/:isbn/ratings', getRatingsCountByISBN);
+
 
 export default router;

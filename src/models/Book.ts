@@ -10,7 +10,12 @@ class Book extends Model {
   public genre!: string;
   public summary?: string;
   public averagerating!: number;
-  public numberreviews!: number; 
+  public numberreviews!: number;
+  public oneStarCount!: number;
+  public twoStarCount!: number;
+  public threeStarCount!: number;
+  public fourStarCount!: number;
+  public fiveStarCount!: number;
 }
 
 Book.init(
@@ -18,7 +23,7 @@ Book.init(
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true, 
+      autoIncrement: true,
     },
     title: {
       type: DataTypes.STRING,
@@ -34,7 +39,7 @@ Book.init(
       defaultValue: "default-cover.jpg"
     },
     publication_date: {
-      type:DataTypes.DATE,
+      type: DataTypes.DATE,
       allowNull: false,
     },
     genre: {
@@ -54,7 +59,27 @@ Book.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
-    }
+    },
+    oneStarCount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    twoStarCount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    threeStarCount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    fourStarCount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    fiveStarCount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
   },
   {
     sequelize,

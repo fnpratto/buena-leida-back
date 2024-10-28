@@ -1,13 +1,15 @@
 import { Router } from "express";
-import { 
-    createReview, 
-    getReviewsByISBN, 
-    deleteReview 
+import {
+    createReview,
+    getReviewsByISBN,
+    deleteReview,
+    rateBook
 } from "../controllers/reviewController";
 
 const router = Router();
 
-router.post("/", createReview);
+router.post("/review", createReview);
+router.get("/rate", rateBook);
 
 router.get("/:isbn", getReviewsByISBN);
 

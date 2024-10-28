@@ -145,3 +145,33 @@ export const createBook = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error creating book", error });
   }
 };
+
+export const getRatingsCountByISBN = async (req: Request, res: Response) => {
+  const { isbn } = req.params;
+
+  if (!isbn) {
+    res.status(400).json({ message: "ISBN is required to fetch ratings count" });
+    return;
+  }
+
+  try {
+    const book = await Book.findOne({ where: { isbn } });
+
+    if (!book) {
+      res.status(404).json({ message: "El libro no existe" });
+      return;
+    }
+
+    res.status(200).json({
+      oneStarCount: book.oneStarCount,
+      twoStarCount: book.twoStarCount,
+      threeStarCount: book.threeStarCount,
+      fourStarCount: book.fourStarCount,
+      fiveStarCount: book.fiveStarCount,
+      averagerating: book.averagerating,
+    });
+  } catch (error) {
+    console.error("Error fetching ratings count:", error);
+    res.status(500).json({ message: "Error fetching ratings count", error });
+  }
+};
