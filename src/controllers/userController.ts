@@ -37,6 +37,13 @@ export const getUsers = async (req: Request, res: Response) => {
 export const createUser = async (req: Request, res: Response) => {
   const { name, email, password, username, favouritegenders } = req.body;
 
+  console.log("Creating user with data:", req.body);
+
+  if (!name || !email || !password || !username || !favouritegenders) {
+    res.status(400).json({ error: "All fields are required." });
+    return;
+  }
+
   try {
     const existingUserByEmail = await User.findOne({ where: { email } });
     if (existingUserByEmail) {

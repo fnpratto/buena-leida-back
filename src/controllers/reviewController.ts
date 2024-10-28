@@ -7,22 +7,23 @@ import User from "../models/User";
 export const rateBook = async (req: Request, res: Response) => {
   const { isbn, calification, iduser } = req.body;
 
+  console.log("Rating book with ISBN:", isbn, "by user ID:", iduser);
+
   if (!calification || calification < 1 || calification > 5) {
     res.status(400).json({ message: "La calificación es obligatoria y debe estar entre 1 y 5 estrellas" });
     return;
   }
 
   try {
-    const id = isbn
-    const book = await Book.findOne({ where: { id } });
+    const book = await Book.findOne({ where: { id: isbn } });
     if (!book) {
-      res.status(404).json({ message: "El libro no existe" });
+      res.status(404).json({ message: "El libro no existe", isbn });
       return;
     }
 
     const user = await User.findByPk(iduser);
     if (!user) {
-      res.status(404).json({ message: "El usuario no existe" });
+      res.status(404).json({ message: "El usuario no existe", iduser });
       return;
     }
 
@@ -36,11 +37,13 @@ export const rateBook = async (req: Request, res: Response) => {
     const totalReviews = book.numberreviews + 1;
     const updatedRating = ((book.averagerating * book.numberreviews) + calification) / totalReviews;
 
-    if (calification === 1) book.oneStarCount += 1;
-    else if (calification === 2) book.twoStarCount += 1;
-    else if (calification === 3) book.threeStarCount += 1;
-    else if (calification === 4) book.fourStarCount += 1;
-    else if (calification === 5) book.fiveStarCount += 1;
+    switch (calification) {
+      case 1: book.oneStarCount += 1; break;
+      case 2: book.twoStarCount += 1; break;
+      case 3: book.threeStarCount += 1; break;
+      case 4: book.fourStarCount += 1; break;
+      case 5: book.fiveStarCount += 1; break;
+    }
 
     await book.update({
       numberreviews: totalReviews,
@@ -54,13 +57,24 @@ export const rateBook = async (req: Request, res: Response) => {
 
     res.status(201).json(newReview);
   } catch (error) {
-    console.error("Error during review creation:", error);
-    res.status(500).json({ message: "Error creating review", error });
+    const err = error as Error;
+    console.error("Error during review creation:", {
+      message: err.message,
+      stack: err.stack,
+      requestData: { isbn, calification, iduser }
+    });
+    res.status(500).json({
+      message: "Error creating review",
+      error: (error as Error).message,
+      requestData: { isbn, calification, iduser }
+    });
   }
 };
 
 export const createReview = async (req: Request, res: Response) => {
   const { isbn, texto, iduser, calification } = req.body;
+
+  console.log("Creating review for ISBN:", isbn, "by user ID:", iduser);
 
   if (!calification || calification < 1 || calification > 5) {
     res.status(400).json({ message: "La calificación es obligatoria y debe estar entre 1 y 5 estrellas" });
@@ -141,6 +155,41 @@ export const getReviewsByISBN = async (req: Request, res: Response) => {
   }
 };
 
+export const getMyReviewByISBN = async (req: Request, res: Response) => {
+  const { isbn } = req.params;
+  const { iduser } = req.query; // !!
+
+  if (!isbn) {
+    res.status(400).json({ message: "ISBN is required to fetch review" });
+    return;
+  }
+
+  if (!iduser) {
+    res.status(400).json({ message: "User ID is required to fetch review" });
+    return;
+  }
+
+  console.log("Fetching review for ISBN:", isbn, "by user ID:", iduser);
+
+  try {
+    const reviews = await Review.findAll({
+      where: {
+        isbn,
+        iduser: iduser,
+      },
+    });
+
+    if (!reviews) {
+      res.status(404).json({ message: "No review found for this book by the user" });
+      return;
+    }
+
+    res.status(200).json(reviews);
+  } catch (error) {
+    console.error("Error fetching review:", error);
+    res.status(500).json({ message: "Error fetching review", error });
+  }
+};
 
 export const deleteReview = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -151,14 +200,13 @@ export const deleteReview = async (req: Request, res: Response) => {
       res.status(404).json({ message: "Review not found" });
       return;
     }
-
-    const isbn = review.isbn;
+    const id_book = review.isbn;
+    console.log("ISBN:", id_book);
 
     await review.destroy();
 
-    await Book.decrement('cantidad_reseñas', {
-      by: 1,
-      where: { isbn },
+    await Book.decrement('numberreviews', {
+      where: { id: id_book },
     });
 
     res.status(204).send();
@@ -168,19 +216,25 @@ export const deleteReview = async (req: Request, res: Response) => {
   }
 };
 
-export const toggleLike = async (req: Request, res: Response) => {
 
+export const toggleLike = async (req: Request, res: Response) => {
   try {
     const reviewId = req.params.id;
-    const userId = 1; //TO-DO , NO SE COMO MANEJAR EL USUARIO SE LO  MANDO POR ENDPOINT?
+    const { iduser } = req.query;
+
+    if (!iduser) {
+      res.status(400).json({ error: 'User ID is required.' });
+      return;
+    }
 
     const review = await Review.findByPk(reviewId);
     if (!review) {
-      return res.status(404).json({ error: 'Review not found.' });
+      res.status(404).json({ error: 'Review not found.' });
+      return;
     }
 
     const existingLike = await Like.findOne({
-      where: { userId, reviewId }
+      where: { userId: Number(iduser), reviewId }
     });
 
     if (existingLike) {
@@ -188,25 +242,27 @@ export const toggleLike = async (req: Request, res: Response) => {
       review.likes = Math.max(0, review.likes - 1);
       await review.save();
 
-      return res.json({
+      res.status(200).json({
         message: 'Review unliked.',
         liked: false,
         likes: review.likes
       });
+      return;
     } else {
-      await Like.create({ userId, reviewId });
+      await Like.create({ userId: Number(iduser), reviewId });
       review.likes += 1;
       await review.save();
 
-      return res.json({
+      res.status(200).json({
         message: 'Review liked.',
         liked: true,
         likes: review.likes
       });
+      return;
     }
   } catch (error) {
     console.error("Error toggling like:", error);
     res.status(500).json({ message: "Error toggling like.", error });
+    return;
   }
-
 };

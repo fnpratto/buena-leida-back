@@ -121,7 +121,7 @@ export const createBook = async (req: Request, res: Response) => {
   const { id, title, author, coverimage, publication_date, genre, summary, averagerating, numberreviews } = req.body;
 
   if (!id || !title || !author || !publication_date || !genre || !summary) {
-    res.status(400).json({ message: "Title, author, publication date, genre, and summary are required." });
+    res.status(400).json({ message: "Id,Title, author, publication date, genre, and summary are required." });
     return;
   }
 
