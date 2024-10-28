@@ -29,6 +29,11 @@ export const getBookById = async (req: Request, res: Response) => {
       summary: book.summary || "none",
       numberreviews: book.numberreviews || 0,
       averagerating: book.averagerating,
+      oneStarCount: book.oneStarCount,
+      twoStarCount: book.twoStarCount,
+      threeStarCount: book.threeStarCount,
+      fourStarCount: book.fourStarCount,
+      fiveStarCount: book.fiveStarCount,
     });
 
   } catch (error) {
@@ -55,6 +60,11 @@ export const getBookByAuthor = async (req: Request, res: Response) => {
       summary: book.summary || "none",
       numberreviews: book.numberreviews || 0,
       averagerating: book.averagerating,
+      oneStarCount: book.oneStarCount,
+      twoStarCount: book.twoStarCount,
+      threeStarCount: book.threeStarCount,
+      fourStarCount: book.fourStarCount,
+      fiveStarCount: book.fiveStarCount,
     });
 
   } catch (error) {
@@ -81,6 +91,11 @@ export const getBookByName = async (req: Request, res: Response) => {
       summary: book.summary || "none",
       numberreviews: book.numberreviews || 0,
       averagerating: book.averagerating,
+      oneStarCount: book.oneStarCount,
+      twoStarCount: book.twoStarCount,
+      threeStarCount: book.threeStarCount,
+      fourStarCount: book.fourStarCount,
+      fiveStarCount: book.fiveStarCount,
     });
 
   } catch (error) {
@@ -108,6 +123,11 @@ export const getBookByTitleAndAuthor = async (req: Request, res: Response) => {
       summary: book.summary || "none",
       numberreviews: book.numberreviews || 0,
       averagerating: book.averagerating,
+      oneStarCount: book.oneStarCount,
+      twoStarCount: book.twoStarCount,
+      threeStarCount: book.threeStarCount,
+      fourStarCount: book.fourStarCount,
+      fiveStarCount: book.fiveStarCount,
     });
 
   } catch (error) {
@@ -136,7 +156,11 @@ export const createBook = async (req: Request, res: Response) => {
       summary,
       averagerating: averagerating || 0.0,
       numberreviews: numberreviews || 0,
-
+      oneStarCount: 0,
+      twoStarCount: 0,
+      threeStarCount: 0,
+      fourStarCount: 0,
+      fiveStarCount: 0,
     })
 
     res.status(201).json(newBook);

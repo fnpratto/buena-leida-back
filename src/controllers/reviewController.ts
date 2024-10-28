@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Review, Book } from "../models";
 import Like from "../models/Like";
 import User from "../models/User";
+import { where } from "sequelize";
 
 
 export const rateBook = async (req: Request, res: Response) => {
@@ -191,6 +192,50 @@ export const getMyReviewByISBN = async (req: Request, res: Response) => {
   }
 };
 
+export const deleteMyReview = async (req: Request, res: Response) => {
+  const { isbn } = req.params;
+  const { iduser } = req.params; // !!
+
+  console.log("Deleting review with ID from book:", isbn, "by user ID:", iduser);
+
+
+  if (!isbn) {
+    res.status(400).json({ message: "ID is required to fetch review" });
+    return;
+  }
+
+  if (!iduser) {
+    res.status(400).json({ message: "User ID from user is required to fetch review" });
+    return;
+  }
+
+  try {
+
+    if (!iduser) {
+      res.status(400).json({ message: "User ID is required." });
+      return;
+    }
+
+    const review = await Review.findOne({ where: { isbn, iduser } });
+    if (!review) {
+      res.status(404).json({ message: "Review not found" });
+      return;
+    }
+    console.log("ISBN:", isbn);
+
+    await review.destroy();
+
+    await Book.decrement('numberreviews', {
+      where: { id: isbn },
+    });
+
+    res.status(204).send();
+  } catch (error) {
+    console.error("Error deleting review:", error);
+    res.status(500).json({ message: "Error deleting review", error });
+  }
+};
+
 export const deleteReview = async (req: Request, res: Response) => {
   const { id } = req.params;
 
@@ -220,7 +265,9 @@ export const deleteReview = async (req: Request, res: Response) => {
 export const toggleLike = async (req: Request, res: Response) => {
   try {
     const reviewId = req.params.id;
-    const { iduser } = req.query;
+    const iduser = req.params.iduser;
+
+    console.log("Toggling like for review ID:", reviewId, "by user ID:", iduser);
 
     if (!iduser) {
       res.status(400).json({ error: 'User ID is required.' });
