@@ -28,6 +28,19 @@ export const rateBook = async (req: Request, res: Response) => {
       return;
     }
 
+    const existingReview = await Review.findOne({
+      where: {
+        isbn,
+        iduser
+      }
+    });
+
+    if (existingReview) {
+      res.status(400).json({ message: "El usuario ya ha reseñado este libro" });
+      return;
+    }
+
+
     const newReview = await Review.create({
       isbn,
       likes: 0,
@@ -96,6 +109,19 @@ export const createReview = async (req: Request, res: Response) => {
       res.status(404).json({ message: "El usuario no existe" });
       return;
     }
+
+    const existingReview = await Review.findOne({
+      where: {
+        isbn,
+        iduser
+      }
+    });
+
+    if (existingReview) {
+      res.status(400).json({ message: "El usuario ya ha reseñado este libro" });
+      return;
+    }
+
 
     const newReview = await Review.create({
       isbn,
