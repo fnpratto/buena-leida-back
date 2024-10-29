@@ -251,10 +251,39 @@ export const deleteMyReview = async (req: Request, res: Response) => {
 
     await review.destroy();
 
-    await Book.decrement('numberreviews', {
-      where: { id: isbn },
-    });
+    const book = await Book.findOne({ where: { id: isbn } });
+    if (!book) {
+      res.status(404).json({ message: "Book not found" });
+      return;
+    }
 
+    const totalReviews = book.numberreviews - 1;
+
+    const updateFields: any = {
+      numberreviews: totalReviews,
+
+    };
+
+    if (review.calification === 1) {
+      updateFields.oneStarCount = book.oneStarCount - 1;
+    } else if (review.calification === 2) {
+      updateFields.twoStarCount = book.twoStarCount - 1;
+    } else if (review.calification === 3) {
+      updateFields.threeStarCount = book.threeStarCount - 1;
+    } else if (review.calification === 4) {
+      updateFields.fourStarCount = book.fourStarCount - 1;
+    } else if (review.calification === 5) {
+      updateFields.fiveStarCount = book.fiveStarCount - 1;
+    }
+
+    if (totalReviews === 0) {
+      updateFields.averagerating = 0;
+    } else {
+      const totalRating = ((book.averagerating * book.numberreviews) - review.calification) / totalReviews;
+      updateFields.averagerating = totalRating;
+    }
+
+    await book.update(updateFields);
     res.status(204).send();
   } catch (error) {
     console.error("Error deleting review:", error);
@@ -276,10 +305,39 @@ export const deleteReview = async (req: Request, res: Response) => {
 
     await review.destroy();
 
-    await Book.decrement('numberreviews', {
-      where: { id: id_book },
-    });
+    const book = await Book.findOne({ where: { id: id_book } });
+    if (!book) {
+      res.status(404).json({ message: "Book not found" });
+      return;
+    }
 
+    const totalReviews = book.numberreviews - 1;
+
+    const updateFields: any = {
+      numberreviews: totalReviews,
+
+    };
+
+    if (review.calification === 1) {
+      updateFields.oneStarCount = book.oneStarCount - 1;
+    } else if (review.calification === 2) {
+      updateFields.twoStarCount = book.twoStarCount - 1;
+    } else if (review.calification === 3) {
+      updateFields.threeStarCount = book.threeStarCount - 1;
+    } else if (review.calification === 4) {
+      updateFields.fourStarCount = book.fourStarCount - 1;
+    } else if (review.calification === 5) {
+      updateFields.fiveStarCount = book.fiveStarCount - 1;
+    }
+
+    if (totalReviews === 0) {
+      updateFields.averagerating = 0;
+    } else {
+      const totalRating = ((book.averagerating * book.numberreviews) - review.calification) / totalReviews;
+      updateFields.averagerating = totalRating;
+    }
+
+    await book.update(updateFields);
     res.status(204).send();
   } catch (error) {
     console.error("Error deleting review:", error);
