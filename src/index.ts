@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import sequelize from "./config/db";
 import userRoutes from "./routes/userRoutes";
 import bookRoutes from "./routes/bookRoutes";
+import reviewRoutes from "./routes/reviewRoutes";
 import cors from "cors";
 
 dotenv.config();
@@ -12,7 +13,7 @@ const app = express();
 app.use(
   cors({
     origin: "http://localhost:5173",
-    methods: ["GET", "POST", "PATCH", "OPTIONS", "PATCH"],
+    methods: ["GET", "POST", "PATCH", "OPTIONS", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
@@ -22,6 +23,7 @@ app.use(express.json());
 // Register routes
 app.use("/users", userRoutes);
 app.use("/books", bookRoutes);
+app.use("/reviews", reviewRoutes);
 
 // Sync the models with the database and start the server
 sequelize

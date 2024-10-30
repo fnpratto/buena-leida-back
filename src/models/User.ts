@@ -8,8 +8,8 @@ class User extends Model {
   public password!: string;
   public username!: string;
   public favouritegenders!: string;
-  public profilePhoto?: string; 
-  public bio?: string;  
+  public profilePhoto?: string;
+  public bio?: string;
 }
 
 User.init(
@@ -20,7 +20,7 @@ User.init(
       primaryKey: true,
     },
     name: {
-      type: DataTypes.STRING(30), 
+      type: DataTypes.STRING(30),
       allowNull: false,
     },
     email: {
@@ -35,32 +35,33 @@ User.init(
     username: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true, 
+      unique: true,
     },
     favouritegenders: {
-      type: DataTypes.ARRAY(DataTypes.STRING), 
+      type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: false,
     },
 
     profilePhoto: {
-      type: DataTypes.STRING, 
+      type: DataTypes.STRING,
       allowNull: true,
-      defaultValue: "https://firebasestorage.googleapis.com/v0/b/buena-leida.appspot.com/o/profiles%2Fdefault.jpg?alt=media&token=100a1fe2-fd46-4fc5-9d11-e7b78ed946f5",
+      defaultValue:
+        "https://firebasestorage.googleapis.com/v0/b/buena-leida.appspot.com/o/profiles%2Fdefault.jpg?alt=media&token=100a1fe2-fd46-4fc5-9d11-e7b78ed946f5",
     },
     bio: {
       type: DataTypes.TEXT,
       allowNull: true,
       defaultValue: "Bienvenido a mi perfil",
     },
-  }, 
+  },
   {
     sequelize,
     modelName: "User",
-//  timestamps: false,
+    timestamps: false,
     tableName: "users",
     hooks: {
       beforeUpdate: (user) => {
-        if (user.changed('username')) {
+        if (user.changed("username")) {
           throw new Error("No se puede modificar el nombre de usuario.");
         }
       },
