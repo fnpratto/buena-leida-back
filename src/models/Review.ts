@@ -4,7 +4,7 @@ import sequelize from "../config/db";
 class Review extends Model {
   public id!: number;
   public iduser!: number;
-  public isbn!:number;
+  public isbn!: number;
   public texto?: string;
   public likes!: number;
   public calification!: number;
@@ -26,13 +26,13 @@ Review.init(
       allowNull: false,
     },
     texto: {
-      type: DataTypes.TEXT, 
+      type: DataTypes.TEXT,
       allowNull: true,
     },
     likes: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 0, 
+      defaultValue: 0,
     },
     calification: {
       type: DataTypes.FLOAT,

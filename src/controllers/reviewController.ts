@@ -30,7 +30,6 @@ export const rateBook = async (req: Request, res: Response) => {
       return;
     }
 
-    // Check if the review already exists
     const existingReview = await Review.findOne({
       where: {
         isbn,
@@ -38,7 +37,6 @@ export const rateBook = async (req: Request, res: Response) => {
       },
     });
 
-    // If the review exists, update it
     if (existingReview) {
       const oldCalification = existingReview.calification;
 
@@ -47,28 +45,24 @@ export const rateBook = async (req: Request, res: Response) => {
       existingReview.calification = calification;
       await existingReview.save();
 
-      // Adjust star counts
       if (oldCalification === 1) book.oneStarCount -= 1;
       else if (oldCalification === 2) book.twoStarCount -= 1;
       else if (oldCalification === 3) book.threeStarCount -= 1;
       else if (oldCalification === 4) book.fourStarCount -= 1;
       else if (oldCalification === 5) book.fiveStarCount -= 1;
 
-      // Increment new star count
       if (calification === 1) book.oneStarCount += 1;
       else if (calification === 2) book.twoStarCount += 1;
       else if (calification === 3) book.threeStarCount += 1;
       else if (calification === 4) book.fourStarCount += 1;
       else if (calification === 5) book.fiveStarCount += 1;
 
-      // Update book's average rating
       const updatedRating =
         (book.averagerating * book.numberreviews -
           oldCalification +
           calification) /
         book.numberreviews;
 
-      // Update book with new counts and average rating
       await book.update({
         averagerating: updatedRating,
         oneStarCount: book.oneStarCount,
@@ -82,7 +76,6 @@ export const rateBook = async (req: Request, res: Response) => {
       return;
     }
 
-    // If the review does not exist, create a new one
     const newReview = await Review.create({
       isbn,
       likes: 0,
@@ -213,6 +206,7 @@ export const createReview = async (req: Request, res: Response) => {
 
 export const getReviewsByISBN = async (req: Request, res: Response) => {
   const { isbn } = req.params;
+  const { iduser } = req.query;
 
   if (!isbn) {
     res.status(400).json({ message: "ISBN is required to fetch reviews" });
@@ -229,13 +223,80 @@ export const getReviewsByISBN = async (req: Request, res: Response) => {
       return;
     }
 
-    res.status(200).json(reviews);
+    let likedReviews: any[] = [];
+    if (iduser) {
+      likedReviews = await Like.findAll({
+        where: {
+          userId: Number(iduser),
+          reviewId: reviews.map((review) => review.id),
+        },
+      });
+    }
+
+    const response = reviews.map((review) => {
+      const isLiked = likedReviews.some((like) => like.reviewId === review.id);
+      return {
+        ...review.toJSON(),
+        liked: isLiked,
+      };
+    });
+
+    res.status(200).json(response);
   } catch (error) {
     console.error("Error fetching reviews:", error);
     res.status(500).json({ message: "Error fetching reviews", error });
   }
 };
 
+export const getReviewsByUserId = async (req: Request, res: Response) => {
+  const { iduser } = req.params;
+
+  if (!iduser) {
+    res.status(400).json({ message: "User ID is required to fetch reviews" });
+    return;
+  }
+
+  console.log("Fetching reviews for user ID:", iduser);
+
+  try {
+    const reviews = await Review.findAll({
+      where: {
+        iduser: iduser,
+      },
+    });
+
+    if (reviews.length === 0) {
+      res.status(404).json({ message: "No reviews found for this user" });
+      return;
+    }
+
+    const detailedReviews = await Promise.all(
+      reviews.map(async (review) => {
+        const book = await Book.findOne({ where: { id: review.isbn } });
+
+        return {
+          reviewId: review.id,
+          content: review.texto,
+          likes: review.likes,
+          calification: review.calification,
+          book: book
+            ? {
+                id: book.id,
+                title: book.title,
+                author: book.author,
+                coverImage: book.coverimage,
+              }
+            : null,
+        };
+      })
+    );
+
+    res.status(200).json(detailedReviews);
+  } catch (error) {
+    console.error("Error fetching user reviews:", error);
+    res.status(500).json({ message: "Error fetching user reviews", error });
+  }
+};
 export const getMyReviewByISBN = async (req: Request, res: Response) => {
   const { isbn } = req.params;
   const { iduser } = req.query; // !!
