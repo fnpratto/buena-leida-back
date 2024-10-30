@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Review, Book } from "../models";
 import Like from "../models/Like";
 import User from "../models/User";
+import Comment from "../models/Comment";
 import { where } from "sequelize";
 
 
@@ -397,3 +398,4 @@ export const toggleLike = async (req: Request, res: Response) => {
     return;
   }
 };
+
