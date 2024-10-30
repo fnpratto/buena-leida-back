@@ -133,7 +133,12 @@ export const rateBook = async (req: Request, res: Response) => {
 export const createReview = async (req: Request, res: Response) => {
   const { isbn, texto, iduser, calification } = req.body;
 
-  console.log("Creating review for ISBN:", isbn, "by user ID:", iduser);
+  console.log(
+    "Creating or updating review for ISBN:",
+    isbn,
+    "by user ID:",
+    iduser
+  );
 
   if (!calification || calification < 1 || calification > 5) {
     res.status(400).json({
@@ -157,6 +162,7 @@ export const createReview = async (req: Request, res: Response) => {
       return;
     }
 
+    // Check if the review already exists
     const existingReview = await Review.findOne({
       where: {
         isbn,
@@ -165,10 +171,48 @@ export const createReview = async (req: Request, res: Response) => {
     });
 
     if (existingReview) {
-      res.status(400).json({ message: "El usuario ya ha reseñado este libro" });
+      // Update the existing review
+      existingReview.texto = texto;
+      existingReview.calification = calification;
+      await existingReview.save();
+
+      // Update the book's statistics only if the rating changed
+      const oldCalification = existingReview.calification;
+      if (oldCalification !== calification) {
+        const totalReviews = book.numberreviews; // Keep the same total reviews
+
+        const updatedRating =
+          (book.averagerating * totalReviews - oldCalification + calification) /
+          totalReviews;
+
+        // Adjust the star count
+        if (oldCalification === 1) book.oneStarCount -= 1;
+        else if (oldCalification === 2) book.twoStarCount -= 1;
+        else if (oldCalification === 3) book.threeStarCount -= 1;
+        else if (oldCalification === 4) book.fourStarCount -= 1;
+        else if (oldCalification === 5) book.fiveStarCount -= 1;
+
+        if (calification === 1) book.oneStarCount += 1;
+        else if (calification === 2) book.twoStarCount += 1;
+        else if (calification === 3) book.threeStarCount += 1;
+        else if (calification === 4) book.fourStarCount += 1;
+        else if (calification === 5) book.fiveStarCount += 1;
+
+        await book.update({
+          averagerating: updatedRating,
+          oneStarCount: book.oneStarCount,
+          twoStarCount: book.twoStarCount,
+          threeStarCount: book.threeStarCount,
+          fourStarCount: book.fourStarCount,
+          fiveStarCount: book.fiveStarCount,
+        });
+      }
+
+      res.status(200).json(existingReview); // Respond with the updated review
       return;
     }
 
+    // Create a new review if it doesn't exist
     const newReview = await Review.create({
       isbn,
       texto,
@@ -199,8 +243,10 @@ export const createReview = async (req: Request, res: Response) => {
 
     res.status(201).json(newReview);
   } catch (error) {
-    console.error("Error during review creation:", error);
-    res.status(500).json({ message: "Error creating review", error });
+    console.error("Error during review creation or update:", error);
+    res
+      .status(500)
+      .json({ message: "Error creating or updating review", error });
   }
 };
 
@@ -223,6 +269,22 @@ export const getReviewsByISBN = async (req: Request, res: Response) => {
       return;
     }
 
+    // Fetch users based on the iduser from the reviews
+    const userIds = reviews.map((review) => review.iduser);
+    const users = await User.findAll({
+      where: {
+        id: userIds,
+      },
+    });
+
+    const userMap = users.reduce((acc, user) => {
+      acc[user.id] = {
+        username: user.username,
+        profilePhoto: user.profilePhoto || "",
+      };
+      return acc;
+    }, {} as Record<number, { username: string; profilePhoto: string }>);
+
     let likedReviews: any[] = [];
     if (iduser) {
       likedReviews = await Like.findAll({
@@ -235,9 +297,14 @@ export const getReviewsByISBN = async (req: Request, res: Response) => {
 
     const response = reviews.map((review) => {
       const isLiked = likedReviews.some((like) => like.reviewId === review.id);
+      const user = userMap[review.iduser]; // Get the user details from the userMap
       return {
         ...review.toJSON(),
         liked: isLiked,
+        user: {
+          username: user ? user.username : null,
+          profilePhoto: user ? user.profilePhoto : null,
+        },
       };
     });
 
