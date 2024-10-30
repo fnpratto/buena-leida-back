@@ -7,6 +7,9 @@ import {
   updateName,
   updateProfilePhoto,
   updateBio,
+  updateFavouriteGenres,
+  recoverPassword,
+  forgotPassword,
 } from "../controllers/userController";
 
 const router = Router();
@@ -18,5 +21,9 @@ router.post("/login", loginUser);
 router.patch("/:id/name", updateName);
 router.patch("/:id/profile-photo", updateProfilePhoto);
 router.patch("/:id/bio", updateBio);
+router.patch("/:id/favourite-genres", updateFavouriteGenres);
+
+router.put("/forgot-password", forgotPassword)
+router.patch("/recover-password/:id", recoverPassword);
 
 export default router;

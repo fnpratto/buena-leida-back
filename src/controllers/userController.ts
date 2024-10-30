@@ -192,3 +192,92 @@ export const updateBio = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Error updating bio" });
   }
 };
+
+export const updateFavouriteGenres = async (req: Request, res: Response) => {
+  const {email, favouriteGenres} = req.body;
+  if (!email) {
+    res.status(400).json({ error: "No email provided" });
+  }
+  if (!favouriteGenres) {
+    res.status(400).json({ error: "There's no new genres" });
+    return;
+  }
+  try {
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      res.status(404).json({ error: "Not founded user" });
+      return;
+    }
+
+    await user.update({
+      favouritegenders: favouriteGenres,
+    });
+
+    res.json({ message: "The genres were succesfully updated", user });
+  } catch (error) {
+    res.status(500).json({ error: "Error updating genres" });
+  }
+}
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  const {email} = req.body;
+  if (!email){
+    res.status(400).json({ error: "No email provided" });
+  }
+  try {
+    const existingUserByEmail = await User.findOne({ where: { email } });
+    if (!existingUserByEmail) {
+      res.status(400).json({ error: "The email isn't registered" });
+      return;
+    }
+    let userId = existingUserByEmail.id;
+    const link_to_recover = "http://localhost:5173/recover-password/${userId}";
+    const nodemailer = require("nodemailer");
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "buena_leida@gmail.com",
+        pass: "contraseña-1234",
+      },
+    });
+
+    const mailConfigs = {
+      from: "buena_leida@gmail.com",
+      to: email,
+      subject: "Recover password",
+      html: 
+        `<h1>Recover password</h1>
+        <p>Click the link below to reset your password:</p>
+        <a href="${link_to_recover}">Recover Password</a>`,
+    };
+    try{
+      transporter.sendMail(mailConfigs);
+      res.json({ message: "Email sended"});
+    } catch(error){
+      res.status(500).json({ error: "The email could not be sent" });
+    }
+  } catch(error){
+    res.status(400).json({ error: "The email isn't registered" });
+  }
+}
+
+export const recoverPassword = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const {newPassword} = req.body;
+  if (!newPassword){
+    res.status(400).json({ error: "No password provided" });
+  }
+  try{
+    let user = await User.findOne({ where: { id } });
+    if (!user){
+      res.status(400).json({ error: "No password provided" });
+      return;
+    }
+    await user.update({
+      password: newPassword,
+    });
+    res.json({ message: "Password succesfully updated"});
+  } catch(error) {
+    res.status(500).json({ error: "The id doesn't exist" });
+  }
+}
