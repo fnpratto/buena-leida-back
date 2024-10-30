@@ -4,14 +4,16 @@ import Like from "../models/Like";
 import User from "../models/User";
 import { where } from "sequelize";
 
-
 export const rateBook = async (req: Request, res: Response) => {
   const { isbn, calification, iduser } = req.body;
 
   console.log("Rating book with ISBN:", isbn, "by user ID:", iduser);
 
   if (!calification || calification < 1 || calification > 5) {
-    res.status(400).json({ message: "La calificación es obligatoria y debe estar entre 1 y 5 estrellas" });
+    res.status(400).json({
+      message:
+        "La calificación es obligatoria y debe estar entre 1 y 5 estrellas",
+    });
     return;
   }
 
@@ -28,35 +30,86 @@ export const rateBook = async (req: Request, res: Response) => {
       return;
     }
 
+    // Check if the review already exists
     const existingReview = await Review.findOne({
       where: {
         isbn,
-        iduser
-      }
+        iduser,
+      },
     });
 
+    // If the review exists, update it
     if (existingReview) {
-      res.status(400).json({ message: "El usuario ya ha reseñado este libro" });
+      const oldCalification = existingReview.calification;
+
+      console.log(oldCalification);
+
+      existingReview.calification = calification;
+      await existingReview.save();
+
+      // Adjust star counts
+      if (oldCalification === 1) book.oneStarCount -= 1;
+      else if (oldCalification === 2) book.twoStarCount -= 1;
+      else if (oldCalification === 3) book.threeStarCount -= 1;
+      else if (oldCalification === 4) book.fourStarCount -= 1;
+      else if (oldCalification === 5) book.fiveStarCount -= 1;
+
+      // Increment new star count
+      if (calification === 1) book.oneStarCount += 1;
+      else if (calification === 2) book.twoStarCount += 1;
+      else if (calification === 3) book.threeStarCount += 1;
+      else if (calification === 4) book.fourStarCount += 1;
+      else if (calification === 5) book.fiveStarCount += 1;
+
+      // Update book's average rating
+      const updatedRating =
+        (book.averagerating * book.numberreviews -
+          oldCalification +
+          calification) /
+        book.numberreviews;
+
+      // Update book with new counts and average rating
+      await book.update({
+        averagerating: updatedRating,
+        oneStarCount: book.oneStarCount,
+        twoStarCount: book.twoStarCount,
+        threeStarCount: book.threeStarCount,
+        fourStarCount: book.fourStarCount,
+        fiveStarCount: book.fiveStarCount,
+      });
+
+      res.status(200).json(existingReview);
       return;
     }
 
-
+    // If the review does not exist, create a new one
     const newReview = await Review.create({
       isbn,
       likes: 0,
       calification,
-      iduser
+      iduser,
     });
 
     const totalReviews = book.numberreviews + 1;
-    const updatedRating = ((book.averagerating * book.numberreviews) + calification) / totalReviews;
+    const updatedRating =
+      (book.averagerating * book.numberreviews + calification) / totalReviews;
 
     switch (calification) {
-      case 1: book.oneStarCount += 1; break;
-      case 2: book.twoStarCount += 1; break;
-      case 3: book.threeStarCount += 1; break;
-      case 4: book.fourStarCount += 1; break;
-      case 5: book.fiveStarCount += 1; break;
+      case 1:
+        book.oneStarCount += 1;
+        break;
+      case 2:
+        book.twoStarCount += 1;
+        break;
+      case 3:
+        book.threeStarCount += 1;
+        break;
+      case 4:
+        book.fourStarCount += 1;
+        break;
+      case 5:
+        book.fiveStarCount += 1;
+        break;
     }
 
     await book.update({
@@ -75,29 +128,30 @@ export const rateBook = async (req: Request, res: Response) => {
     console.error("Error during review creation:", {
       message: err.message,
       stack: err.stack,
-      requestData: { isbn, calification, iduser }
+      requestData: { isbn, calification, iduser },
     });
     res.status(500).json({
       message: "Error creating review",
-      error: (error as Error).message,
-      requestData: { isbn, calification, iduser }
+      error: err.message,
+      requestData: { isbn, calification, iduser },
     });
   }
 };
-
 export const createReview = async (req: Request, res: Response) => {
   const { isbn, texto, iduser, calification } = req.body;
 
   console.log("Creating review for ISBN:", isbn, "by user ID:", iduser);
 
   if (!calification || calification < 1 || calification > 5) {
-    res.status(400).json({ message: "La calificación es obligatoria y debe estar entre 1 y 5 estrellas" });
+    res.status(400).json({
+      message:
+        "La calificación es obligatoria y debe estar entre 1 y 5 estrellas",
+    });
     return;
   }
 
-
   try {
-    const id = isbn
+    const id = isbn;
     const book = await Book.findOne({ where: { id } });
     if (!book) {
       res.status(404).json({ message: "El libro no existe" });
@@ -113,8 +167,8 @@ export const createReview = async (req: Request, res: Response) => {
     const existingReview = await Review.findOne({
       where: {
         isbn,
-        iduser
-      }
+        iduser,
+      },
     });
 
     if (existingReview) {
@@ -122,17 +176,17 @@ export const createReview = async (req: Request, res: Response) => {
       return;
     }
 
-
     const newReview = await Review.create({
       isbn,
       texto,
       likes: 0,
       calification,
-      iduser
+      iduser,
     });
 
     const totalReviews = book.numberreviews + 1;
-    const updatedRating = ((book.averagerating * book.numberreviews) + calification) / totalReviews;
+    const updatedRating =
+      (book.averagerating * book.numberreviews + calification) / totalReviews;
 
     if (calification === 1) book.oneStarCount += 1;
     else if (calification === 2) book.twoStarCount += 1;
@@ -207,7 +261,9 @@ export const getMyReviewByISBN = async (req: Request, res: Response) => {
     });
 
     if (!reviews) {
-      res.status(404).json({ message: "No review found for this book by the user" });
+      res
+        .status(404)
+        .json({ message: "No review found for this book by the user" });
       return;
     }
 
@@ -222,8 +278,12 @@ export const deleteMyReview = async (req: Request, res: Response) => {
   const { isbn } = req.params;
   const { iduser } = req.params; // !!
 
-  console.log("Deleting review with ID from book:", isbn, "by user ID:", iduser);
-
+  console.log(
+    "Deleting review with ID from book:",
+    isbn,
+    "by user ID:",
+    iduser
+  );
 
   if (!isbn) {
     res.status(400).json({ message: "ID is required to fetch review" });
@@ -231,12 +291,13 @@ export const deleteMyReview = async (req: Request, res: Response) => {
   }
 
   if (!iduser) {
-    res.status(400).json({ message: "User ID from user is required to fetch review" });
+    res
+      .status(400)
+      .json({ message: "User ID from user is required to fetch review" });
     return;
   }
 
   try {
-
     if (!iduser) {
       res.status(400).json({ message: "User ID is required." });
       return;
@@ -261,7 +322,6 @@ export const deleteMyReview = async (req: Request, res: Response) => {
 
     const updateFields: any = {
       numberreviews: totalReviews,
-
     };
 
     if (review.calification === 1) {
@@ -279,7 +339,9 @@ export const deleteMyReview = async (req: Request, res: Response) => {
     if (totalReviews === 0) {
       updateFields.averagerating = 0;
     } else {
-      const totalRating = ((book.averagerating * book.numberreviews) - review.calification) / totalReviews;
+      const totalRating =
+        (book.averagerating * book.numberreviews - review.calification) /
+        totalReviews;
       updateFields.averagerating = totalRating;
     }
 
@@ -315,7 +377,6 @@ export const deleteReview = async (req: Request, res: Response) => {
 
     const updateFields: any = {
       numberreviews: totalReviews,
-
     };
 
     if (review.calification === 1) {
@@ -333,7 +394,9 @@ export const deleteReview = async (req: Request, res: Response) => {
     if (totalReviews === 0) {
       updateFields.averagerating = 0;
     } else {
-      const totalRating = ((book.averagerating * book.numberreviews) - review.calification) / totalReviews;
+      const totalRating =
+        (book.averagerating * book.numberreviews - review.calification) /
+        totalReviews;
       updateFields.averagerating = totalRating;
     }
 
@@ -345,27 +408,31 @@ export const deleteReview = async (req: Request, res: Response) => {
   }
 };
 
-
 export const toggleLike = async (req: Request, res: Response) => {
   try {
     const reviewId = req.params.id;
     const iduser = req.params.iduser;
 
-    console.log("Toggling like for review ID:", reviewId, "by user ID:", iduser);
+    console.log(
+      "Toggling like for review ID:",
+      reviewId,
+      "by user ID:",
+      iduser
+    );
 
     if (!iduser) {
-      res.status(400).json({ error: 'User ID is required.' });
+      res.status(400).json({ error: "User ID is required." });
       return;
     }
 
     const review = await Review.findByPk(reviewId);
     if (!review) {
-      res.status(404).json({ error: 'Review not found.' });
+      res.status(404).json({ error: "Review not found." });
       return;
     }
 
     const existingLike = await Like.findOne({
-      where: { userId: Number(iduser), reviewId }
+      where: { userId: Number(iduser), reviewId },
     });
 
     if (existingLike) {
@@ -374,9 +441,9 @@ export const toggleLike = async (req: Request, res: Response) => {
       await review.save();
 
       res.status(200).json({
-        message: 'Review unliked.',
+        message: "Review unliked.",
         liked: false,
-        likes: review.likes
+        likes: review.likes,
       });
       return;
     } else {
@@ -385,9 +452,9 @@ export const toggleLike = async (req: Request, res: Response) => {
       await review.save();
 
       res.status(200).json({
-        message: 'Review liked.',
+        message: "Review liked.",
         liked: true,
-        likes: review.likes
+        likes: review.likes,
       });
       return;
     }
