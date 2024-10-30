@@ -36,7 +36,7 @@ Book.init(
     coverimage: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: "default-cover.jpg"
+      defaultValue: "default-cover.jpg",
     },
     publication_date: {
       type: DataTypes.DATE,
