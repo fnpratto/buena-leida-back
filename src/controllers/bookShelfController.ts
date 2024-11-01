@@ -4,6 +4,33 @@ import { Op } from "sequelize";
 
 import { BookShelf } from '../models/BookShelf'; 
 
+
+export const getUserBookshelves = async (req: Request, res: Response) => {
+  const { id_usuario } = req.params;
+
+  if (!id_usuario) {
+    res.status(400).json({ message: "User ID is required." });
+    return;
+  }
+
+  try {
+    const bookshelves = await BookShelf.findAll({
+      where: { id_usuario },
+      include: [{ model: Book }], 
+    });
+
+    if (bookshelves.length === 0) {
+      res.status(404).json({ message: "No bookshelves found for this user." });
+      return;
+    }
+
+    res.status(200).json(bookshelves);
+  } catch (error) {
+    console.error("Error retrieving user's bookshelves:", error);
+    res.status(500).json({ message: "An error occurred while retrieving bookshelves.", error });
+  }
+};
+
 export const createBookShelf = async (req: Request, res: Response) => {
   const { title, id_usuario } = req.body;
 
