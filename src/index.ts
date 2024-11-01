@@ -4,7 +4,9 @@ import sequelize from "./config/db";
 import userRoutes from "./routes/userRoutes";
 import bookRoutes from "./routes/bookRoutes";
 import reviewRoutes from "./routes/reviewRoutes";
+import bookShelfController from "./routes/bookShelfRoutes";
 import cors from "cors";
+import { BookShelf } from "./models/BookShelf";
 
 dotenv.config();
 
@@ -24,6 +26,7 @@ app.use(express.json());
 app.use("/users", userRoutes);
 app.use("/books", bookRoutes);
 app.use("/reviews", reviewRoutes);
+app.use("/bookshelf", bookShelfController);
 
 // Sync the models with the database and start the server
 sequelize
