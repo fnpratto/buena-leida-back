@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Book from "../models/Book";
 import { Op } from "sequelize";
-import { BookShelf } from '../models/BookShelf';
+import { BookShelf, BookShelfBooks } from '../models/BookShelf';
 import sequelize from "../config/db";
 
 
@@ -79,5 +79,47 @@ export const addBookToBookshelf = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error adding book to bookshelf:", error);
     res.status(500).json({ message: "An unexpected error occurred." });
+  }
+};
+
+export const updateBookshelfFromBook = async (req: Request, res: Response) => {
+  const { bookId } = req.params;
+  const { bookshelfIds, userId } = req.body; 
+  // bookshelfIds es un vector de los ids que vamos a modificar
+
+  // if (!Array.isArray(bookshelfIds)) {
+  //   return res.status(400).json({ error: 'El campo bookshelfIds debe ser un array.' });
+  // }
+
+  if (!bookshelfIds || !userId || !bookId) {
+    res.status(400).json({ message: "Bookshelf IDs and Book ID and User ID are required." });
+    return;
+  }
+  try {
+    for (let i = 0; i < bookshelfIds.length; i++){
+      const bookshelf = await BookShelf.findByPk(bookshelfIds[i]);
+      const book = await Book.findByPk(bookId);
+  
+      if (!bookshelf || !book) {
+        res.status(404).json({ message: "Bookshelf or Book not found" });
+        return;
+      }
+      const relation_exists = await BookShelfBooks.findOne({
+        where: {
+          bookId: bookId,
+          bookshelfId: bookshelfIds[i]
+        }
+      });
+      if (relation_exists){
+        await BookShelfBooks.destroy({ where: { bookId, bookshelfIds } });
+      } else {
+        await (bookshelf as any).addBook(book);
+      }
+    }
+    res.status(200).json({ message: "Book bookshelfs succesfully updated." });
+  } catch (error) {
+    console.error("Error updating bookshelf:", error);
+    res.status(500).json({ message: "An unexpected error occurred." });
+    return;
   }
 };
