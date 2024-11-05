@@ -16,7 +16,7 @@ export const getUserBookshelves = async (req: Request, res: Response) => {
   try {
     const bookshelves = await BookShelf.findAll({
       where: { id_usuario },
-      include: [{ model: Book }], // Include associated books
+      include: [{ model: Book }],
     });
 
     if (bookshelves.length === 0) {

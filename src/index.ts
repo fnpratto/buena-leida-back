@@ -7,6 +7,7 @@ import reviewRoutes from "./routes/reviewRoutes";
 import bookShelfController from "./routes/bookShelfRoutes";
 import cors from "cors";
 import { BookShelf } from "./models/BookShelf";
+import ReadingState from "./models/ReadingState";
 import Book from "./models/Book";
 
 dotenv.config();
@@ -26,11 +27,15 @@ app.use(express.json());
 BookShelf.belongsToMany(Book, { through: 'bookshelf_books', foreignKey: 'bookshelf_id' });
 Book.belongsToMany(BookShelf, { through: 'bookshelf_books', foreignKey: 'book_id' });
 
-// Register routes
+
+ReadingState.belongsTo(Book, { foreignKey: "bookId" });
+Book.hasOne(ReadingState, { foreignKey: "bookId" });
+
 app.use("/users", userRoutes);
 app.use("/books", bookRoutes);
 app.use("/reviews", reviewRoutes);
 app.use("/bookshelf", bookShelfController);
+app.use("/readingstate", require("./routes/readingStateRoutes").default);
 
 
 
