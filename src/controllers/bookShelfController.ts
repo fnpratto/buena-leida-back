@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
-import Book from "../models/Book"; 
+import Book from "../models/Book";
 import { Op } from "sequelize";
-
-import { BookShelf } from '../models/BookShelf'; 
+import { BookShelf } from '../models/BookShelf';
 
 
 export const getUserBookshelves = async (req: Request, res: Response) => {
@@ -16,7 +15,7 @@ export const getUserBookshelves = async (req: Request, res: Response) => {
   try {
     const bookshelves = await BookShelf.findAll({
       where: { id_usuario },
-      include: [{ model: Book }], 
+      include: [{ model: Book }],
     });
 
     if (bookshelves.length === 0) {
@@ -34,7 +33,7 @@ export const getUserBookshelves = async (req: Request, res: Response) => {
 export const createBookShelf = async (req: Request, res: Response) => {
   const { title, id_usuario } = req.body;
 
-  if (!title || !id_usuario ) {
+  if (!title || !id_usuario) {
     res.status(400).json({ message: "Title and user ID are required." });
     return;
   }
@@ -69,7 +68,7 @@ export const addBookToBookshelf = async (req: Request, res: Response) => {
       res.status(404).json({ message: "Bookshelf or Book not found" });
       return;
     }
-    await (bookshelf as any).addBook(book); 
+    await (bookshelf as any).addBook(book);
 
     res.status(200).json({ message: "Book successfully added to bookshelf." });
   } catch (error) {

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
   getBooks,
-  createBook,
+  createBooks,
   getBookById,
   getBookByTitleAndAuthor,
   getBookByAuthor,
@@ -16,7 +16,7 @@ router.get("/:id", getBookById);
 router.get("/title/:title", getBookByName);
 router.get("/author/:author", getBookByAuthor);
 router.get("/:title/:author", getBookByTitleAndAuthor);
-router.post("/", createBook);
+router.post("/", createBooks);
 
 router.get("/:isbn/ratings", getRatingsCountByISBN);
 
