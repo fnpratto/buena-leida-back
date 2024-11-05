@@ -9,7 +9,7 @@ const router = express.Router();
 
 // Library routes
 router.post('/', createBookShelf);
-router.post('/add-book', addBookToBookshelf);
+router.post('/addBook', addBookToBookshelf);
 router.get('/:id_usuario', getUserBookshelves);
 
 export default router;

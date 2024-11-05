@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Book from "../models/Book";
 import { Op } from "sequelize";
 import { BookShelf } from '../models/BookShelf';
+import sequelize from "../config/db";
 
 
 export const getUserBookshelves = async (req: Request, res: Response) => {
@@ -15,7 +16,7 @@ export const getUserBookshelves = async (req: Request, res: Response) => {
   try {
     const bookshelves = await BookShelf.findAll({
       where: { id_usuario },
-      include: [{ model: Book }],
+      include: [{ model: Book }], // Include associated books
     });
 
     if (bookshelves.length === 0) {
@@ -61,19 +62,22 @@ export const addBookToBookshelf = async (req: Request, res: Response) => {
   }
 
   try {
-    const bookshelf = await BookShelf.findByPk(bookshelfId);
+    const bookShelf = await BookShelf.findByPk(bookshelfId);
     const book = await Book.findByPk(bookId);
 
-    if (!bookshelf || !book) {
+    if (!bookShelf || !book) {
       res.status(404).json({ message: "Bookshelf or Book not found" });
       return;
     }
-    await (bookshelf as any).addBook(book);
+
+    await sequelize.models.bookshelf_books.create({
+      bookshelf_id: bookshelfId,
+      book_id: bookId,
+    });
 
     res.status(200).json({ message: "Book successfully added to bookshelf." });
   } catch (error) {
     console.error("Error adding book to bookshelf:", error);
     res.status(500).json({ message: "An unexpected error occurred." });
-    return;
   }
 };

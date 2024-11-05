@@ -1,4 +1,4 @@
-import { DataTypes, Model  } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/db";
 import Book from './Book';
 
@@ -6,7 +6,7 @@ class BookShelf extends Model {
   public id!: number;
   public title!: string;
   public id_usuario!: number;
-  public created_at?: Date;
+  public created_at!: Date;
 }
 
 BookShelf.init(
@@ -27,6 +27,7 @@ BookShelf.init(
     created_at: {
       type: DataTypes.DATE,
       allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
   },
   {
@@ -45,7 +46,7 @@ const BookShelfBooks = sequelize.define('BookShelfBooks', {
       key: 'id',
     },
   },
-  bookId: {
+  booksId: {
     type: DataTypes.INTEGER,
     references: {
       model: Book,
@@ -53,10 +54,6 @@ const BookShelfBooks = sequelize.define('BookShelfBooks', {
     },
   }
 });
-
-BookShelf.belongsToMany(Book, { through: BookShelf, foreignKey: 'id' });
-Book.belongsToMany(BookShelf, { through: BookShelf , foreignKey: 'id' });
-
 
 export { BookShelf, BookShelfBooks };
 
