@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Book from "../models/Book"; 
 import { Op } from "sequelize";
 
-import { BookShelf } from '../models/BookShelf'; 
+import { BookShelf, BookShelfBooks } from '../models/BookShelf'; 
 
 
 export const getUserBookshelves = async (req: Request, res: Response) => {
@@ -78,3 +78,36 @@ export const addBookToBookshelf = async (req: Request, res: Response) => {
     return;
   }
 };
+
+export const removeBookFromBookshelf = async (req: Request, res: Response) => {
+  const { bookshelfId, bookId } = req.body;
+
+  if (!bookshelfId || !bookId) {
+    res.status(400).json({ message: "Bookshelf ID and Book ID are required." });
+    return;
+  }
+
+  try {
+    const bookshelf = await BookShelf.findByPk(bookshelfId);
+    const book = await Book.findByPk(bookId);
+
+    if (!bookshelf || !book) {
+      res.status(404).json({ message: "Bookshelf or Book not found" });
+      return;
+    }
+    
+    const bookshelf_id = bookshelf.id;
+    const book_id = book.id;
+    const existingBookInBookshelf = await BookShelfBooks.findOne({ where: {bookshelf_id, book_id} });
+    if (existingBookInBookshelf) {
+      await (bookshelf as any).removeBookFromBookshelf(book); 
+    }
+
+    res.status(200).json({ message: "Book successfully removed from bookshelf." });
+
+  } catch (error) {
+    console.error("Error removing book from bookshelf: ", error);
+    res.status(500).json({ message: "An unexpected error occurred." });
+    return;
+  }
+}
