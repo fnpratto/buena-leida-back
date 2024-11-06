@@ -24,9 +24,17 @@ app.use(
 
 app.use(express.json());
 
-BookShelf.belongsToMany(Book, { through: 'bookshelf_books', foreignKey: 'bookshelf_id' });
-Book.belongsToMany(BookShelf, { through: 'bookshelf_books', foreignKey: 'book_id' });
+BookShelf.belongsToMany(Book, {
+  through: "BookShelfBooks",
+  foreignKey: "bookshelfId",
+  otherKey: "bookId",
+});
 
+Book.belongsToMany(BookShelf, {
+  through: "BookShelfBooks",
+  foreignKey: "bookId",
+  otherKey: "bookshelfId",
+});
 
 ReadingState.belongsTo(Book, { foreignKey: "bookId" });
 Book.hasOne(ReadingState, { foreignKey: "bookId" });
@@ -36,8 +44,6 @@ app.use("/books", bookRoutes);
 app.use("/reviews", reviewRoutes);
 app.use("/bookshelf", bookShelfController);
 app.use("/readingstate", require("./routes/readingStateRoutes").default);
-
-
 
 // Sync the models with the database and start the server
 sequelize

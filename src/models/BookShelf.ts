@@ -1,6 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/db";
-import Book from './Book';
+import Book from "./Book";
 
 class BookShelf extends Model {
   public id!: number;
@@ -38,22 +38,21 @@ BookShelf.init(
   }
 );
 
-const BookShelfBooks = sequelize.define('BookShelfBooks', {
+const BookShelfBooks = sequelize.define("BookShelfBooks", {
   bookshelfId: {
     type: DataTypes.INTEGER,
     references: {
       model: BookShelf,
-      key: 'id',
+      key: "id",
     },
   },
   bookId: {
     type: DataTypes.INTEGER,
     references: {
       model: Book,
-      key: 'id',
+      key: "id",
     },
-  }
+  },
 });
 
 export { BookShelf, BookShelfBooks };
-

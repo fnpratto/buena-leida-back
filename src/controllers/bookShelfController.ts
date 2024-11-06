@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import Book from "../models/Book";
 import { Op } from "sequelize";
-import { BookShelf, BookShelfBooks } from '../models/BookShelf';
+import { BookShelf, BookShelfBooks } from "../models/BookShelf";
 import sequelize from "../config/db";
-
 
 export const getUserBookshelves = async (req: Request, res: Response) => {
   const { id_usuario } = req.params;
+  console.log(id_usuario);
 
   if (!id_usuario) {
     res.status(400).json({ message: "User ID is required." });
@@ -27,11 +27,15 @@ export const getUserBookshelves = async (req: Request, res: Response) => {
     res.status(200).json(bookshelves);
   } catch (error) {
     console.error("Error retrieving user's bookshelves:", error);
-    res.status(500).json({ message: "An error occurred while retrieving bookshelves.", error });
+    res.status(500).json({
+      message: "An error occurred while retrieving bookshelves.",
+      error,
+    });
   }
 };
 
 export const createBookShelf = async (req: Request, res: Response) => {
+  console.log("AAAA");
   const { title, id_usuario } = req.body;
 
   if (!title || !id_usuario) {
@@ -54,6 +58,7 @@ export const createBookShelf = async (req: Request, res: Response) => {
 };
 
 export const addBookToBookshelf = async (req: Request, res: Response) => {
+  console.log(req.body);
   const { bookshelfId, bookId } = req.body;
 
   if (!bookshelfId || !bookId) {
@@ -82,49 +87,74 @@ export const addBookToBookshelf = async (req: Request, res: Response) => {
   }
 };
 
-export const updateBookshelfFromBook = async (req: Request, res: Response) => {
+export const updateBookshelfFromBook = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const { bookId } = req.params;
-  const { bookshelfIds, userId } = req.body; 
-  // bookshelfIds es un vector de los ids que vamos a modificar
+  const { bookshelfIds, userId } = req.body;
 
-  // if (!Array.isArray(bookshelfIds)) {
-  //   return res.status(400).json({ error: 'El campo bookshelfIds debe ser un array.' });
-  // }
-
+  // Validate the request body
   if (!bookshelfIds || !userId || !bookId) {
-    res.status(400).json({ message: "Bookshelf IDs and Book ID and User ID are required." });
-    return;
+    res.status(400).json({
+      message: "Bookshelf IDs, Book ID, and User ID are required.",
+    });
   }
+
+  console.log("Received bookshelf ids:", bookshelfIds);
+
   try {
-    for (let i = 0; i < bookshelfIds.length; i++){
-      const bookshelf = await BookShelf.findByPk(bookshelfIds[i]);
-      const book = await Book.findByPk(bookId);
-  
-      if (!bookshelf || !book) {
-        res.status(404).json({ message: "Bookshelf or Book not found" });
-        return;
-      }
-      const relation_exists = await BookShelfBooks.findOne({
+    // 1. Get the existing bookshelf associations for the book
+    const existingRelations = await BookShelfBooks.findAll({
+      where: { bookId },
+      attributes: ["bookshelfId"],
+    });
+
+    // 2. Extract the bookshelfIds from the existing relations
+    const existingBookshelfIds = existingRelations.map(
+      (relation: any) => relation.bookshelfId
+    );
+
+    // 3. Remove associations for bookshelves that are no longer part of the new list
+    const shelvesToRemove = existingBookshelfIds.filter(
+      (id) => !bookshelfIds.includes(id)
+    );
+    if (shelvesToRemove.length > 0) {
+      await BookShelfBooks.destroy({
         where: {
-          bookId: bookId,
-          bookshelfId: bookshelfIds[i]
-        }
+          bookId,
+          bookshelfId: shelvesToRemove,
+        },
       });
-      if (relation_exists){
-        await BookShelfBooks.destroy({ where: { bookId, bookshelfIds } });
-      } else {
-        await (BookShelfBooks as any).addBook(book);
-      }
+      console.log("Removed associations for shelves:", shelvesToRemove);
     }
-    res.status(200).json({ message: "Book bookshelfs succesfully updated." });
+
+    // 4. Add associations for new bookshelves that the book is not already part of
+    const shelvesToAdd = bookshelfIds.filter(
+      (id: any) => !existingBookshelfIds.includes(id)
+    );
+    if (shelvesToAdd.length > 0) {
+      const newRelations = shelvesToAdd.map((bookshelfId: any) => ({
+        bookshelfId,
+        bookId,
+      }));
+
+      await BookShelfBooks.bulkCreate(newRelations);
+      console.log("Added associations for shelves:", shelvesToAdd);
+    }
+
+    // 5. Send the success response after processing
+    res.status(200).json({ message: "Bookshelf updated successfully." });
   } catch (error) {
     console.error("Error updating bookshelf:", error);
     res.status(500).json({ message: "An unexpected error occurred." });
-    return;
   }
 };
 
-export const removeBookFromBookshelf = async (req: Request, res: Response) => {
+export const removeBookFromBookshelf = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const { bookshelfId, bookId } = req.body;
 
   if (!bookshelfId || !bookId) {
@@ -140,49 +170,69 @@ export const removeBookFromBookshelf = async (req: Request, res: Response) => {
       res.status(404).json({ message: "Bookshelf or Book not found" });
       return;
     }
-    
-    const existingBookInBookshelf = await BookShelfBooks.findOne({ where: {bookshelfId: bookshelfId, bookId: bookId} });
+    console.log("Bookshelf ID:", bookshelfId, "Book ID:", bookId);
+
+    // Confirm the association before deleting
+    const existingBookInBookshelf = await BookShelfBooks.findOne({
+      where: { bookshelfId, bookId },
+    });
+
     if (existingBookInBookshelf) {
-      await BookShelfBooks.destroy({where: { bookId: bookId, bookshelfId: bookshelfId}})
+      await existingBookInBookshelf.destroy();
+      res
+        .status(200)
+        .json({ message: "Book successfully removed from bookshelf." });
+    } else {
+      res
+        .status(404)
+        .json({ message: "Book was not associated with this bookshelf." });
     }
-
-    res.status(200).json({ message: "Book successfully removed from bookshelf." });
-
   } catch (error) {
     console.error("Error removing book from bookshelf: ", error);
     res.status(500).json({ message: "An unexpected error occurred." });
-    return;
   }
-}
+};
 
-export const getUserBookshelvesFromBook = async (req: Request, res: Response) => {
+export const getUserBookshelvesFromBook = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const { userId } = req.params;
   const { bookId } = req.body;
+
   if (!userId || !bookId) {
     res.status(400).json({ message: "User ID and Book ID are required." });
     return;
   }
+
   try {
     const bookshelves = await BookShelf.findAll({
-      where: { userId: userId },
-      include: {
-        model: BookShelfBooks,
-        where: { bookId: bookId },
-        attributes: []
-      }
+      where: { id_usuario: userId },
+      include: [
+        {
+          model: Book,
+          where: { id: bookId },
+          through: { attributes: [] },
+          attributes: [],
+        },
+      ],
+      attributes: ["id", "title"],
     });
+
     if (bookshelves.length === 0) {
-      res.status(404).json({ message: "No bookshelves found for the book."});
+      res.status(404).json({ message: "No bookshelves found for the book." });
       return;
     }
-    let bookshelvesNamesFromUser = bookshelves.map(bookshelf => bookshelf.title);
-    return res.status(200).json(bookshelvesNamesFromUser) as any
+
+    const bookshelvesData = bookshelves.map((bookshelf) => ({
+      id: bookshelf.id,
+      title: bookshelf.title,
+    }));
+
+    // Send the response
+    res.status(200).json(bookshelvesData);
   } catch (error) {
-    console.error("Error removing book from bookshelf: ", error);
+    console.error("Error finding bookshelves for book: ", error);
     res.status(500).json({ message: "An unexpected error occurred." });
-    return;
   }
-}
-
-
-
+};
