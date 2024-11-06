@@ -6,11 +6,13 @@ import {
   removeBookFromBookshelf,
   updateBookshelfFromBook,
   getUserBookshelvesFromBook,
-} from "../controllers/bookShelfController"; // Adjust the import path as necessary
+} from "../controllers/bookShelfController";
 
 const router = express.Router();
 
-router.post("/", createBookShelf);
+router.post("/", async (req, res) => {
+  await createBookShelf(req, res);
+});
 router.post("/addBook", addBookToBookshelf);
 router.get("/:id_usuario", getUserBookshelves);
 router.delete("/remove_book", removeBookFromBookshelf);

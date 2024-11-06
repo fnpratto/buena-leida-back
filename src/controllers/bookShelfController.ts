@@ -35,7 +35,6 @@ export const getUserBookshelves = async (req: Request, res: Response) => {
 };
 
 export const createBookShelf = async (req: Request, res: Response) => {
-  console.log("AAAA");
   const { title, id_usuario } = req.body;
 
   if (!title || !id_usuario) {
@@ -44,6 +43,20 @@ export const createBookShelf = async (req: Request, res: Response) => {
   }
 
   try {
+    // Check if a bookshelf with the same title already exists for the user
+    const existingLibrary = await BookShelf.findOne({
+      where: { title, id_usuario },
+    });
+
+    if (existingLibrary) {
+      return res
+        .status(409)
+        .json({
+          message: "A bookshelf with this title already exists for this user.",
+        });
+    }
+
+    // Create the new bookshelf
     const newLibrary = await BookShelf.create({
       title,
       id_usuario,
