@@ -113,7 +113,7 @@ export const updateBookshelfFromBook = async (req: Request, res: Response) => {
       if (relation_exists){
         await BookShelfBooks.destroy({ where: { bookId, bookshelfIds } });
       } else {
-        await (bookshelf as any).addBook(book);
+        await (BookShelfBooks as any).addBook(book);
       }
     }
     res.status(200).json({ message: "Book bookshelfs succesfully updated." });
@@ -141,11 +141,9 @@ export const removeBookFromBookshelf = async (req: Request, res: Response) => {
       return;
     }
     
-    const bookshelf_id = bookshelf.id;
-    const book_id = book.id;
-    const existingBookInBookshelf = await BookShelfBooks.findOne({ where: {bookshelf_id, book_id} });
+    const existingBookInBookshelf = await BookShelfBooks.findOne({ where: {bookshelfId: bookshelfId, bookId: bookId} });
     if (existingBookInBookshelf) {
-      await (bookshelf as any).removeBookFromBookshelf(book); 
+      await BookShelfBooks.destroy({where: { bookId: bookId, bookshelfId: bookshelfId}})
     }
 
     res.status(200).json({ message: "Book successfully removed from bookshelf." });
