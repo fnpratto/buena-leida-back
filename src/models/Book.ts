@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/db";
+import { BookShelf } from "./BookShelf";
 
 class Book extends Model {
   public id!: number;

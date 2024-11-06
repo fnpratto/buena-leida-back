@@ -121,7 +121,7 @@ export const getBookByTitleAndAuthor = async (req: Request, res: Response) => {
   }
 };
 
-export const createBook = async (req: Request, res: Response) => {
+export const createBook = async (bookData: any) => {
   const {
     id,
     title,
@@ -132,14 +132,10 @@ export const createBook = async (req: Request, res: Response) => {
     summary,
     averagerating,
     numberreviews,
-  } = req.body;
+  } = bookData;
 
   if (!id || !title || !author || !publication_date || !genre || !summary) {
-    res.status(400).json({
-      message:
-        "Id,Title, author, publication date, genre, and summary are required.",
-    });
-    return;
+    return { error: "Id, Title, Author, Publication Date, Genre, and Summary are required." };
   }
 
   try {
@@ -160,12 +156,44 @@ export const createBook = async (req: Request, res: Response) => {
       fiveStarCount: 0,
     });
 
-    res.status(201).json(newBook);
+    return { book: newBook };
   } catch (error) {
     console.error("Error during book creation:", error);
-    res.status(500).json({ message: "Error creating book", error });
+    return { error: "Error creating book", details: error };
   }
 };
+
+export const createBooks = async (req: Request, res: Response) => {
+  const books = req.body;
+
+  if (!Array.isArray(books)) {
+    res.status(400).json({
+      message: "An array of books is required.",
+    });
+    return;
+  }
+
+  const createdBooks = [];
+  const failedBooks = [];
+
+  for (const bookData of books) {
+    const result = await createBook(bookData);
+    if (result.book) {
+      createdBooks.push(result.book);
+    } else {
+      failedBooks.push({ bookData, error: result.error, details: result.details });
+    }
+  }
+
+  res.status(201).json({
+    message: "Books processed",
+    createdBooks,
+    failedBooks,
+  });
+  return;
+};
+
+
 
 export const getRatingsCountByISBN = async (req: Request, res: Response) => {
   const { isbn } = req.params;

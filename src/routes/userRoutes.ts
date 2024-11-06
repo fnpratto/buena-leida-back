@@ -7,12 +7,14 @@ import {
   updateName,
   updateProfilePhoto,
   updateBio,
+  createUsers,
 } from "../controllers/userController";
 
 const router = Router();
 
 router.get("/", getUsers);
 router.post("/", createUser);
+router.post("/lots", createUsers);
 router.post("/check-user-exists", checkUserExists);
 router.post("/login", loginUser);
 router.patch("/:id/name", updateName);

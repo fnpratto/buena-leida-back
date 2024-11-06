@@ -199,3 +199,74 @@ export const updateBio = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Error updating bio" });
   }
 };
+
+export const createUsers = async (req: Request, res: Response) => {
+  const usersData = req.body.users; // Expecting an array of users in the request body
+
+  if (!Array.isArray(usersData) || usersData.length === 0) {
+    res.status(400).json({ error: "A non-empty array of users is required." });
+    return;
+  }
+
+  const createdUsers = [];
+  const errors = [];
+
+  for (const userData of usersData) {
+    const { name, email, password, username, favouritegenders } = userData;
+
+    if (!name || !email || !password || !username || !favouritegenders) {
+      errors.push({ userData, error: "All fields are required." });
+      continue;
+    }
+
+    try {
+      const existingUserByEmail = await User.findOne({ where: { email } });
+      if (existingUserByEmail) {
+        errors.push({ userData, error: "Email is already registered." });
+        continue;
+      }
+
+      const existingUserByUsername = await User.findOne({ where: { username } });
+      if (existingUserByUsername) {
+        errors.push({ userData, error: "Username is already taken." });
+        continue;
+      }
+
+      const defaultBio = "Bienvenido a mi perfil";
+      const defaultProfilePhoto =
+        "https://firebasestorage.googleapis.com/v0/b/buena-leida.appspot.com/o/profiles%2Fdefault.jpg?alt=media&token=100a1fe2-fd46-4fc5-9d11-e7b78ed946f5";
+      const favouritegendersArray = Array.isArray(favouritegenders)
+        ? favouritegenders
+        : [favouritegenders];
+
+      const newUser = await User.create({
+        name,
+        email,
+        password,
+        username,
+        favouritegenders: favouritegendersArray,
+        bio: defaultBio,
+        profilePhoto: defaultProfilePhoto,
+      });
+
+      createdUsers.push({
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+        username: newUser.username,
+        favouritegenders: newUser.favouritegenders,
+        fotoPerfil: newUser.profilePhoto,
+        biografia: newUser.bio,
+      });
+    } catch (error) {
+      console.error("Error during user creation:", error);
+      errors.push({ userData, error: "Error creating user." });
+      return;
+    }
+  }
+
+  res.json({
+    createdUsers,
+    errors,
+  });
+};

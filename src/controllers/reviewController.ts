@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { Review, Book } from "../models";
+import Book from "../models/Book";
+import Review from "../models/Review";
 import Like from "../models/Like";
 import User from "../models/User";
 import { where } from "sequelize";
