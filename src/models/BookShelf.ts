@@ -46,7 +46,7 @@ const BookShelfBooks = sequelize.define('BookShelfBooks', {
       key: 'id',
     },
   },
-  booksId: {
+  bookId: {
     type: DataTypes.INTEGER,
     references: {
       model: Book,
