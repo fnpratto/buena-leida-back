@@ -49,11 +49,9 @@ export const createBookShelf = async (req: Request, res: Response) => {
     });
 
     if (existingLibrary) {
-      return res
-        .status(409)
-        .json({
-          message: "A bookshelf with this title already exists for this user.",
-        });
+      return res.status(409).json({
+        message: "A bookshelf with this title already exists for this user.",
+      });
     }
 
     // Create the new bookshelf
@@ -211,7 +209,7 @@ export const getUserBookshelvesFromBook = async (
   res: Response
 ): Promise<void> => {
   const { userId } = req.params;
-  const { bookId } = req.body;
+  const { bookId } = req.query; // Use req.query for bookId
 
   if (!userId || !bookId) {
     res.status(400).json({ message: "User ID and Book ID are required." });
@@ -242,7 +240,6 @@ export const getUserBookshelvesFromBook = async (
       title: bookshelf.title,
     }));
 
-    // Send the response
     res.status(200).json(bookshelvesData);
   } catch (error) {
     console.error("Error finding bookshelves for book: ", error);
