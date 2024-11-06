@@ -154,3 +154,35 @@ export const removeBookFromBookshelf = async (req: Request, res: Response) => {
     return;
   }
 }
+
+export const getUserBookshelvesFromBook = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  const { bookId } = req.body;
+  if (!userId || !bookId) {
+    res.status(400).json({ message: "User ID and Book ID are required." });
+    return;
+  }
+  try {
+    const bookshelves = await BookShelf.findAll({
+      where: { userId: userId },
+      include: {
+        model: BookShelfBooks,
+        where: { bookId: bookId },
+        attributes: []
+      }
+    });
+    if (bookshelves.length === 0) {
+      res.status(404).json({ message: "No bookshelves found for the book."});
+      return;
+    }
+    let bookshelvesNamesFromUser = bookshelves.map(bookshelf => bookshelf.title);
+    return res.status(200).json(bookshelvesNamesFromUser) as any
+  } catch (error) {
+    console.error("Error removing book from bookshelf: ", error);
+    res.status(500).json({ message: "An unexpected error occurred." });
+    return;
+  }
+}
+
+
+
