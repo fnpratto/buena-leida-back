@@ -40,7 +40,7 @@ export const getReadingStateForBook = async (req: Request, res: Response) => {
     const { bookId,userId  } = req.params;
 
     try {
-        const readingState = await ReadingState.findOne({ where: { bookId } });
+        const readingState = await ReadingState.findOne({ where: { bookId,userId } });
         if (!readingState) {
             res.status(404).json({ message: "Reading state not found for this book and user." });
             return;
