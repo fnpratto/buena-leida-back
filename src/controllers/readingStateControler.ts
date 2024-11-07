@@ -3,10 +3,10 @@ import ReadingState from "../models/ReadingState";
 import Book from "../models/Book";
 
 export const saveBookReadingState = async (req: Request, res: Response) => {
-    const { bookId, status } = req.body;
+    const { bookId, status, userId} = req.body;
 
-    if (!bookId || !status) {
-        res.status(400).json({ message: "Book ID and status are required." });
+    if (!bookId || !status || !userId) {
+        res.status(400).json({ message: "Book ID, user ID and status are required." });
         return
     }
 
@@ -17,7 +17,7 @@ export const saveBookReadingState = async (req: Request, res: Response) => {
             return;
         }
 
-        const existingReadingState = await ReadingState.findOne({ where: { bookId } });
+        const existingReadingState = await ReadingState.findOne({ where: { bookId,userId  } });
         if (existingReadingState) {
 
             existingReadingState.status = status;
@@ -26,7 +26,7 @@ export const saveBookReadingState = async (req: Request, res: Response) => {
             return;
         }
 
-        const newReadingState = await ReadingState.create({ bookId, status });
+        const newReadingState = await ReadingState.create({ bookId, status,userId});
         res.status(201).json(newReadingState);
         return
     } catch (error) {
@@ -37,12 +37,12 @@ export const saveBookReadingState = async (req: Request, res: Response) => {
 };
 
 export const getReadingStateForBook = async (req: Request, res: Response) => {
-    const { bookId } = req.params;
+    const { bookId,userId  } = req.params;
 
     try {
         const readingState = await ReadingState.findOne({ where: { bookId } });
         if (!readingState) {
-            res.status(404).json({ message: "Reading state not found for this book." });
+            res.status(404).json({ message: "Reading state not found for this book and user." });
             return;
         }
         res.status(200).json(readingState);
@@ -57,16 +57,16 @@ export const getReadingStateForBook = async (req: Request, res: Response) => {
 
 
 export const getBooksByReadingState = async (req: Request, res: Response) => {
-    const { status } = req.params;
+    const { status,userId } = req.params;
 
-    if (!status) {
-        res.status(400).json({ message: "Reading state status is required." });
+    if (!status||!userId) {
+        res.status(400).json({ message: "User ID and Reading state status is required." });
         return;
     }
 
     try {
         const readingStates = await ReadingState.findAll({
-            where: { status },
+            where: { status,userId },
         });
 
         if (readingStates.length === 0) {
