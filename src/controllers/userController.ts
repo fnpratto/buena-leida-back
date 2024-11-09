@@ -24,6 +24,24 @@ export const checkUserExists = async (req: Request, res: Response) => {
   }
 };
 
+export const getUserProfile = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findByPk(userId, {
+      attributes: ["id", "name", "username", "bio", "profilePhoto", "favouritegenders"],
+    });
+
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+    }
+
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching user profile" });
+  }
+};
+
 export const getUsers = async (req: Request, res: Response) => {
   try {
     const users = await User.findAll();
@@ -41,20 +59,17 @@ export const createUser = async (req: Request, res: Response) => {
 
   if (!name || !email || !password || !username || !favouritegenders) {
     res.status(400).json({ error: "All fields are required." });
-    return;
   }
 
   try {
     const existingUserByEmail = await User.findOne({ where: { email } });
     if (existingUserByEmail) {
       res.status(400).json({ error: "Email is already registered" });
-      return;
     }
 
     const existingUserByUsername = await User.findOne({ where: { username } });
     if (existingUserByUsername) {
       res.status(400).json({ error: "Username is already taken" });
-      return;
     }
 
     const defaultBio = "Bienvenido a mi perfil";
@@ -201,7 +216,7 @@ export const updateBio = async (req: Request, res: Response) => {
 };
 
 export const createUsers = async (req: Request, res: Response) => {
-  const usersData = req.body.users; // Expecting an array of users in the request body
+  const usersData = req.body.users; 
 
   if (!Array.isArray(usersData) || usersData.length === 0) {
     res.status(400).json({ error: "A non-empty array of users is required." });
@@ -269,4 +284,25 @@ export const createUsers = async (req: Request, res: Response) => {
     createdUsers,
     errors,
   });
+};
+
+export const searchUserProfileByUsername = async (req: Request, res: Response) => {
+  const { username } = req.params;
+
+  try {
+    const user = await User.findOne({
+      where: { username },
+      attributes: ["id", "name", "username", "bio", "profilePhoto", "favouritegenders"],
+    });
+
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error("Error searching for user profile:", error);
+    res.status(500).json({ error: "Error searching for user profile" });
+  }
 };
