@@ -9,7 +9,7 @@ import {
   updateBio,
   createUsers,
   getUserProfile,
-  searchUserProfileByUsername,
+  searchUserProfile,
 } from "../controllers/userController";
 
 const router = Router();
@@ -23,7 +23,7 @@ router.patch("/:id/name", updateName);
 router.patch("/:id/profile-photo", updateProfilePhoto);
 router.patch("/:id/bio", updateBio);
 router.get("/:userId/profile", getUserProfile); 
-router.get("/search/:username", searchUserProfileByUsername);
+router.get("/search/:identifier", searchUserProfile);
 
 
 export default router;

@@ -286,14 +286,21 @@ export const createUsers = async (req: Request, res: Response) => {
   });
 };
 
-export const searchUserProfileByUsername = async (req: Request, res: Response) => {
-  const { username } = req.params;
+export const searchUserProfile = async (req: Request, res: Response) => {
+  const { identifier } = req.params;
 
   try {
-    const user = await User.findOne({
-      where: { username },
+    let user = await User.findOne({
+      where: { username: identifier },
       attributes: ["id", "name", "username", "bio", "profilePhoto", "favouritegenders"],
     });
+
+    if (!user) {
+      user = await User.findOne({
+        where: { name: identifier },
+        attributes: ["id", "name", "username", "bio", "profilePhoto", "favouritegenders"],
+      });
+    }
 
     if (!user) {
       res.status(404).json({ error: "User not found" });
