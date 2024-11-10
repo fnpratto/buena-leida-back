@@ -9,8 +9,9 @@ const router = express.Router();
 
 router.post("/", saveBookReadingState);
 
-router.get("/:bookId", getReadingStateForBook);
+router.get("/:userId/:bookId", getReadingStateForBook);
 
-router.get("/state/:status", getBooksByReadingState);
+router.get("/:userId/state/:status", getBooksByReadingState);
+
 
 export default router;

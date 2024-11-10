@@ -1,4 +1,3 @@
-// src/models/ReadingState.ts
 import { Model, DataTypes } from "sequelize";
 import sequelize from "../config/db";
 import Book from "./Book";
@@ -6,6 +5,7 @@ import Book from "./Book";
 class ReadingState extends Model {
     public id!: number;
     public bookId!: number;
+    public userId!: number;
     public status!: string;
 }
 
@@ -24,8 +24,12 @@ ReadingState.init(
             },
             allowNull: false,
         },
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
         status: {
-            type: DataTypes.ENUM("quiero_leer'", "leyendo", "leido"), // Only three statuses
+            type: DataTypes.ENUM("quiero_leer'", "leyendo", "leido"), 
             allowNull: false,
         },
     },
