@@ -8,6 +8,8 @@ import {
   updateProfilePhoto,
   updateBio,
   createUsers,
+  getUserProfile,
+  searchUserProfile,
 } from "../controllers/userController";
 
 const router = Router();
@@ -20,5 +22,8 @@ router.post("/login", loginUser);
 router.patch("/:id/name", updateName);
 router.patch("/:id/profile-photo", updateProfilePhoto);
 router.patch("/:id/bio", updateBio);
+router.get("/:userId/profile", getUserProfile); 
+router.get("/search/:identifier", searchUserProfile);
+
 
 export default router;

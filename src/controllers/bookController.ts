@@ -3,8 +3,20 @@ import Book from "../models/Book";
 import { Op } from "sequelize";
 
 export const getBooks = async (req: Request, res: Response) => {
+  const { genre, sort } = req.query;
+
   try {
-    const books = await Book.findAll();
+    const queryOptions: any = {};
+
+    if (genre) {
+      queryOptions.where = { genre: { [Op.iLike]: `%${genre}%` } };
+    }
+
+    if (sort === 'ranking') {
+      queryOptions.order = [['averagerating', 'DESC']];
+    }
+
+    const books = await Book.findAll(queryOptions);
     res.json(books);
   } catch (error) {
     res.status(500).json({ message: "Error fetching books", error });
