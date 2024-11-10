@@ -29,7 +29,7 @@ ReadingState.init(
             allowNull: false,
         },
         status: {
-            type: DataTypes.ENUM("quiero_leer'", "leyendo", "leido"), 
+            type: DataTypes.ENUM("quiero_leer", "leyendo", "leido"), 
             allowNull: false,
         },
     },
