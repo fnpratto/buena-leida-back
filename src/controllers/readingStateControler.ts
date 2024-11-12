@@ -90,3 +90,31 @@ export const getBooksByReadingState = async (req: Request, res: Response) => {
         return;
     }
 };
+
+export const removeBookReadingState = async (req: Request, res: Response) => {
+    const { bookId, userId} = req.body;
+
+    if (!bookId || !userId) {
+        res.status(400).json({ message: "Book ID and user ID are required." });
+        return
+    }
+    try {
+        const book = await Book.findByPk(bookId);
+        if (!book) {
+            res.status(404).json({ message: "Book not found." });
+            return;
+        }
+        const existingReadingState = await ReadingState.findOne({ where: { bookId,userId  } });
+        if (!existingReadingState) {
+            res.status(404).json({ message: "The book doesn't have a reading state" });
+            return;
+        }
+        await existingReadingState.destroy();
+        res.status(200).json("Reading state succesfully removed.");
+        return
+    } catch (error) {
+        console.error("Error removing reading state:", error);
+        res.status(500).json({ message: "An error occurred while removing the reading state." });
+        return;
+    }
+};

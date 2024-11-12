@@ -15,7 +15,7 @@ router.get("/", getBooks);
 router.get("/:id", getBookById);
 router.get("/title/:title", getBookByName);
 router.get("/author/:author", getBookByAuthor);
-router.get("/:title/:author", getBookByTitleAndAuthor);
+//router.get("/:title/:author", getBookByTitleAndAuthor);
 router.post("/", createBooks);
 
 

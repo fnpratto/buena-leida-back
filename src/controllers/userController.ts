@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import User from "../models/User";
+import { Op } from "sequelize";
 
 export const checkUserExists = async (req: Request, res: Response) => {
   const { email, username } = req.body;
@@ -311,5 +312,36 @@ export const searchUserProfile = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error searching for user profile:", error);
     res.status(500).json({ error: "Error searching for user profile" });
+  }
+};
+
+export const searchUsers = async (req: Request, res: Response) => {
+  const { name } = req.params;
+  if (!name) {
+    res.status(400).json({ message: "The name is required to search" });
+    return;
+  }
+  try {
+    let users = await User.findAll({
+      where: { 
+        [Op.or]:
+        [{username: {
+          [Op.regexp]: `(^|\\s)${name}(\\s|$)`
+        }},
+        {name: {
+          [Op.regexp]: `(^|\\s)${name}(\\s|$)`
+        }}
+        ]
+      },
+      attributes: ["id", "name", "username", "profilePhoto"],
+    });
+    if (users.length === 0) {
+      res.status(404).json({ error: "Users not found for this name" });
+      return;
+    }
+    res.json(users);
+  } catch (error) {
+    console.error("Error searching users:", error);
+    res.status(500).json({ error: "Error searching for users" });
   }
 };
