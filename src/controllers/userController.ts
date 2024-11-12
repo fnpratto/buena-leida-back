@@ -326,10 +326,10 @@ export const searchUsers = async (req: Request, res: Response) => {
       where: { 
         [Op.or]:
         [{username: {
-          [Op.regexp]: `(^|\\s)${name}(\\s|$)`
+          [Op.iLike]: `%${name}%`
         }},
         {name: {
-          [Op.regexp]: `(^|\\s)${name}(\\s|$)`
+          [Op.iLike]: `%${name}%`
         }}
         ]
       },
