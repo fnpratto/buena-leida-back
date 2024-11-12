@@ -55,15 +55,18 @@ export const getBookById = async (req: Request, res: Response) => {
 
 export const getBookByAuthor = async (req: Request, res: Response) => {
   const { author } = req.params;
+  const { sort } = req.query;
 
   try {
-    const books = await Book.findAll({
-      where: {
-        author: {
-          [Op.iLike]: `%${author}%`,
-        },
-      },
-    });
+    const queryOptions: any = {};
+
+    if (author) {
+      queryOptions.where = { author: { [Op.iLike]: `%${author}%` } };
+    }
+    if (sort === 'rankings') {
+      queryOptions.order = [['averagerating', 'DESC']];
+    }
+    const books = await Book.findAll(queryOptions);
 
     if (books.length === 0) {
       res.status(404).json({ message: "No books found for this author" });
@@ -78,15 +81,18 @@ export const getBookByAuthor = async (req: Request, res: Response) => {
 
 export const getBookByName = async (req: Request, res: Response) => {
   const { title } = req.params;
+  const { sort } = req.query;
 
   try {
-    const books = await Book.findAll({
-      where: {
-        title: {
-          [Op.iLike]: `%${title}%`,
-        },
-      },
-    });
+    const queryOptions: any = {};
+
+    if (title) {
+      queryOptions.where = { title: { [Op.iLike]: `%${title}%` } };
+    }
+    if (sort === 'rankings') {
+      queryOptions.order = [['averagerating', 'DESC']];
+    }
+    const books = await Book.findAll(queryOptions);
 
     if (books.length === 0) {
       res.status(404).json({ message: "No books found with this title" });
