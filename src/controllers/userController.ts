@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import User from "../models/User";
+import { Op } from "sequelize";
 
 export const checkUserExists = async (req: Request, res: Response) => {
   const { email, username } = req.body;
@@ -323,12 +324,12 @@ export const searchUsers = async (req: Request, res: Response) => {
   try {
     let users = await User.findAll({
       where: { 
-        $or:
+        [Op.or]:
         [{username: {
-          $regexp: [`(^|\\s)${name}(\\s|$)`]
+          [Op.regexp]: `(^|\\s)${name}(\\s|$)`
         }},
         {name: {
-          $regexp: [`(^|\\s)${name}(\\s|$)`]
+          [Op.regexp]: `(^|\\s)${name}(\\s|$)`
         }}
         ]
       },

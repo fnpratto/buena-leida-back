@@ -3,7 +3,7 @@ import Book from "../models/Book";
 import { Op } from "sequelize";
 
 export const getBooks = async (req: Request, res: Response) => {
-  const { genre, sort } = req.query;
+  const { genre, sort } = req.body;
 
   try {
     const queryOptions: any = {};
