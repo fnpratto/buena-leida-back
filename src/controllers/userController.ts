@@ -30,7 +30,14 @@ export const getUserProfile = async (req: Request, res: Response) => {
 
   try {
     const user = await User.findByPk(userId, {
-      attributes: ["id", "name", "username", "bio", "profilePhoto", "favouritegenders"],
+      attributes: [
+        "id",
+        "name",
+        "username",
+        "bio",
+        "profilePhoto",
+        "favouritegenders",
+      ],
     });
 
     if (!user) {
@@ -217,7 +224,7 @@ export const updateBio = async (req: Request, res: Response) => {
 };
 
 export const createUsers = async (req: Request, res: Response) => {
-  const usersData = req.body.users; 
+  const usersData = req.body.users;
 
   if (!Array.isArray(usersData) || usersData.length === 0) {
     res.status(400).json({ error: "A non-empty array of users is required." });
@@ -242,7 +249,9 @@ export const createUsers = async (req: Request, res: Response) => {
         continue;
       }
 
-      const existingUserByUsername = await User.findOne({ where: { username } });
+      const existingUserByUsername = await User.findOne({
+        where: { username },
+      });
       if (existingUserByUsername) {
         errors.push({ userData, error: "Username is already taken." });
         continue;
@@ -293,13 +302,27 @@ export const searchUserProfile = async (req: Request, res: Response) => {
   try {
     let user = await User.findOne({
       where: { username: identifier },
-      attributes: ["id", "name", "username", "bio", "profilePhoto", "favouritegenders"],
+      attributes: [
+        "id",
+        "name",
+        "username",
+        "bio",
+        "profilePhoto",
+        "favouritegenders",
+      ],
     });
 
     if (!user) {
       user = await User.findOne({
         where: { name: identifier },
-        attributes: ["id", "name", "username", "bio", "profilePhoto", "favouritegenders"],
+        attributes: [
+          "id",
+          "name",
+          "username",
+          "bio",
+          "profilePhoto",
+          "favouritegenders",
+        ],
       });
     }
 
@@ -323,17 +346,21 @@ export const searchUsers = async (req: Request, res: Response) => {
   }
   try {
     let users = await User.findAll({
-      where: { 
-        [Op.or]:
-        [{username: {
-          [Op.iLike]: `%${name}%`
-        }},
-        {name: {
-          [Op.iLike]: `%${name}%`
-        }}
-        ]
+      where: {
+        [Op.or]: [
+          {
+            username: {
+              [Op.iLike]: `%${name}%`,
+            },
+          },
+          {
+            name: {
+              [Op.iLike]: `%${name}%`,
+            },
+          },
+        ],
       },
-      attributes: ["id", "name", "username", "profilePhoto"],
+      attributes: ["id", "name", "username", "profilePhoto", "bio"],
     });
     if (users.length === 0) {
       res.status(404).json({ error: "Users not found for this name" });
