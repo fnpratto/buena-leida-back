@@ -7,6 +7,7 @@ import {
   getBookByAuthor,
   getBookByName,
   getRatingsCountByISBN,
+  getBookByGenre,
 } from "../controllers/bookController";
 
 const router = Router();
@@ -15,9 +16,10 @@ router.get("/", getBooks);
 router.get("/:id", getBookById);
 router.get("/title/:title", getBookByName);
 router.get("/author/:author", getBookByAuthor);
+router.get("/genre/:genre", getBookByGenre);
+
 //router.get("/:title/:author", getBookByTitleAndAuthor);
 router.post("/", createBooks);
-
 
 router.get("/:isbn/ratings", getRatingsCountByISBN);
 

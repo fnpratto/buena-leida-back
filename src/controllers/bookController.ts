@@ -12,8 +12,8 @@ export const getBooks = async (req: Request, res: Response) => {
       queryOptions.where = { genre: { [Op.iLike]: `%${genre}%` } };
     }
 
-    if (sort === 'ranking') {
-      queryOptions.order = [['averagerating', 'DESC']];
+    if (sort === "ranking") {
+      queryOptions.order = [["averagerating", "DESC"]];
     }
 
     const books = await Book.findAll(queryOptions);
@@ -63,8 +63,34 @@ export const getBookByAuthor = async (req: Request, res: Response) => {
     if (author) {
       queryOptions.where = { author: { [Op.iLike]: `%${author}%` } };
     }
-    if (sort === 'rankings') {
-      queryOptions.order = [['averagerating', 'DESC']];
+    if (sort === "rankings") {
+      queryOptions.order = [["averagerating", "DESC"]];
+    }
+    const books = await Book.findAll(queryOptions);
+
+    if (books.length === 0) {
+      res.status(404).json({ message: "No books found for this author" });
+      return;
+    }
+
+    res.json(books);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching book data", error });
+  }
+};
+
+export const getBookByGenre = async (req: Request, res: Response) => {
+  const { genre } = req.params;
+  const { sort } = req.query;
+
+  try {
+    const queryOptions: any = {};
+
+    if (genre) {
+      queryOptions.where = { genre: { [Op.iLike]: `%${genre}%` } };
+    }
+    if (sort === "rankings") {
+      queryOptions.order = [["averagerating", "DESC"]];
     }
     const books = await Book.findAll(queryOptions);
 
@@ -89,8 +115,8 @@ export const getBookByName = async (req: Request, res: Response) => {
     if (title) {
       queryOptions.where = { title: { [Op.iLike]: `%${title}%` } };
     }
-    if (sort === 'rankings') {
-      queryOptions.order = [['averagerating', 'DESC']];
+    if (sort === "rankings") {
+      queryOptions.order = [["averagerating", "DESC"]];
     }
     const books = await Book.findAll(queryOptions);
 
@@ -153,7 +179,10 @@ export const createBook = async (bookData: any) => {
   } = bookData;
 
   if (!id || !title || !author || !publication_date || !genre || !summary) {
-    return { error: "Id, Title, Author, Publication Date, Genre, and Summary are required." };
+    return {
+      error:
+        "Id, Title, Author, Publication Date, Genre, and Summary are required.",
+    };
   }
 
   try {
@@ -199,7 +228,11 @@ export const createBooks = async (req: Request, res: Response) => {
     if (result.book) {
       createdBooks.push(result.book);
     } else {
-      failedBooks.push({ bookData, error: result.error, details: result.details });
+      failedBooks.push({
+        bookData,
+        error: result.error,
+        details: result.details,
+      });
     }
   }
 
@@ -210,8 +243,6 @@ export const createBooks = async (req: Request, res: Response) => {
   });
   return;
 };
-
-
 
 export const getRatingsCountByISBN = async (req: Request, res: Response) => {
   const { isbn } = req.params;
