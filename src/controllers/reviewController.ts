@@ -593,3 +593,39 @@ export const toggleLike = async (req: Request, res: Response) => {
     return;
   }
 };
+
+export const addBookReviews = async (req: Request, res: Response) => {
+  const { reviews } = req.body;
+
+  if (!Array.isArray(reviews) || reviews.length === 0) {
+      res.status(400).json({ message: "An array of reviews is required." });
+      return;
+  }
+
+  try {
+      const savedReviews = [];
+      for (const review of reviews) {
+          const { bookId, userId, rating, comment } = review;
+
+          if (!bookId || !userId || !rating || rating < 1 || rating > 5) {
+              res.status(400).json({ message: "Each review must have a valid book ID, user ID, and rating (1-5)." });
+              return;
+          }
+
+
+          const book = await Book.findByPk(bookId);
+          if (!book) {
+              res.status(404).json({ message: `Book with ID ${bookId} not found.` });
+              return;
+          }
+
+          const newReview = await Review.create({ bookId, userId, rating, comment });
+          savedReviews.push(newReview);
+      }
+
+      res.status(201).json({ message: "Reviews added successfully.", reviews: savedReviews });
+  } catch (error) {
+      console.error("Error adding reviews:", error);
+      res.status(500).json({ message: "An error occurred while saving the reviews." });
+  }
+};
