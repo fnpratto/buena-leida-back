@@ -8,7 +8,7 @@ import {
   deleteMyReview,
   toggleLike,
   getReviewsByUserId,
-  addBookReviews,
+  createMultipleReviews,
 } from "../controllers/reviewController";
 
 const router = Router();
@@ -20,7 +20,7 @@ router.get("/:isbn/myreview", getMyReviewByISBN);
 router.delete("/:isbn/:iduser", deleteMyReview);
 router.post("/:id/:iduser/like", toggleLike);
 router.get("/user/:iduser", getReviewsByUserId);
-router.post("/lots",addBookReviews)
+router.post("/lots",createMultipleReviews)
 
 router.delete("/:id", deleteReview);
 
