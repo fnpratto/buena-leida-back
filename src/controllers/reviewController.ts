@@ -593,3 +593,125 @@ export const toggleLike = async (req: Request, res: Response) => {
     return;
   }
 };
+
+export const createMultipleReviews = async (req: Request, res: Response) => {
+  const reviews = req.body.reviews;
+
+  if (!Array.isArray(reviews)) {
+    res.status(400).json({ message: "Se espera un array de reseñas" });
+    return;
+  }
+
+  const responses = [];
+
+  for (const review of reviews) {
+    const { isbn, texto, iduser, calification } = review;
+
+    if (!calification || calification < 1 || calification > 5) {
+      responses.push({
+        isbn,
+        iduser,
+        message: "La calificación es obligatoria y debe estar entre 1 y 5 estrellas",
+        status: 400,
+      });
+      continue;
+    }
+
+    try {
+      const id = isbn;
+      const book = await Book.findOne({ where: { id } });
+      if (!book) {
+        responses.push({ isbn, iduser, message: "El libro no existe", status: 404 });
+        continue;
+      }
+
+      const user = await User.findByPk(iduser);
+      if (!user) {
+        responses.push({ isbn, iduser, message: "El usuario no existe", status: 404 });
+        continue;
+      }
+
+      const existingReview = await Review.findOne({ where: { isbn, iduser } });
+      if (existingReview) {
+        const oldCalification = existingReview.calification;
+
+        existingReview.texto = texto;
+        existingReview.calification = calification;
+        await existingReview.save();
+
+        if (oldCalification !== calification) {
+          const totalReviews = book.numberreviews;
+          const updatedRating = 
+            (book.averagerating * totalReviews - oldCalification + calification) /
+            totalReviews;
+
+          updateStarCounts(book, oldCalification, calification);
+
+          await book.update({
+            averagerating: updatedRating,
+            oneStarCount: book.oneStarCount,
+            twoStarCount: book.twoStarCount,
+            threeStarCount: book.threeStarCount,
+            fourStarCount: book.fourStarCount,
+            fiveStarCount: book.fiveStarCount,
+          });
+        }
+
+        responses.push({ isbn, iduser, review: existingReview, status: 200 });
+      } else {
+        const newReview = await Review.create({
+          isbn,
+          texto,
+          likes: 0,
+          calification,
+          iduser,
+        });
+
+        const totalReviews = book.numberreviews + 1;
+        const updatedRating = 
+          (book.averagerating * book.numberreviews + calification) /
+          totalReviews;
+
+        book.numberreviews = totalReviews;
+        updateStarCounts(book, 0, calification);
+
+        await book.update({
+          numberreviews: totalReviews,
+          averagerating: updatedRating,
+          oneStarCount: book.oneStarCount,
+          twoStarCount: book.twoStarCount,
+          threeStarCount: book.threeStarCount,
+          fourStarCount: book.fourStarCount,
+          fiveStarCount: book.fiveStarCount,
+        });
+
+        responses.push({ isbn, iduser, review: newReview, status: 201 });
+      }
+    } catch (error) {
+      console.error("Error during review creation or update:", error);
+      responses.push({
+        isbn,
+        iduser,
+        message: "Error creating or updating review",
+        error,
+        status: 500,
+      });
+    }
+  }
+
+  res.status(207).json(responses);
+};
+
+const updateStarCounts = (book: any, oldRating: number, newRating: number) => {
+  if (oldRating === 1) book.oneStarCount -= 1;
+  else if (oldRating === 2) book.twoStarCount -= 1;
+  else if (oldRating === 3) book.threeStarCount -= 1;
+  else if (oldRating === 4) book.fourStarCount -= 1;
+  else if (oldRating === 5) book.fiveStarCount -= 1;
+
+  if (newRating === 1) book.oneStarCount += 1;
+  else if (newRating === 2) book.twoStarCount += 1;
+  else if (newRating === 3) book.threeStarCount += 1;
+  else if (newRating === 4) book.fourStarCount += 1;
+  else if (newRating === 5) book.fiveStarCount += 1;
+};
