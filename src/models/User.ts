@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/db";
+import { Group } from "./Group";
 
 class User extends Model {
   public id!: number;
