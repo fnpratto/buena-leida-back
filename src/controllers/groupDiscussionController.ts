@@ -11,12 +11,13 @@ export const createGroupDiscussion = async (req: Request, res: Response) => {
       res.status(400).json({ message: "Group ID, name and creator ID are required." });
       return;
     }
+
     try {
         const user = await User.findByPk(creatorId);
         if (!user) {
             res.status(404).json({ message: "User not found."});
             return;
-        }
+        }   
         const group = await Group.findByPk(groupId);
         if (!group) {
             res.status(404).json({ message: "Group not found." });
@@ -27,6 +28,7 @@ export const createGroupDiscussion = async (req: Request, res: Response) => {
             creatorId,
             groupId,
         });
+
         res.status(201).json(newDiscussion);
     } catch (error) {
         console.error("Error during library creation:", error);
@@ -47,14 +49,15 @@ export const getDiscussions = async (req: Request, res: Response) => {
             return;
         };
         const discussions = await GroupDiscussion.findAll({
-            where: {id: groupId}
+            where: {id: groupId},
+            attributes: ["id", "name", "creatorId"]
         });
 
         if (discussions.length === 0){
             res.status(404).json({ message: "No discussions found for the group." });
             return;
         }
-        
+
         res.status(200).json(discussions);
     } catch (error) {
         console.error("Error getting group discussions:", error);
