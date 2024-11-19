@@ -2,15 +2,16 @@ import { Request, Response } from 'express';
 import {Group, GroupUser} from '../models/Group';
 import User from '../models/User'; 
 import { Op } from 'sequelize';
+import { QueryTypes } from 'sequelize';
 import sequelize from "../config/db";
 import { GroupDiscussion } from '../models/GroupDiscussion';
 
 
 export const createGroup = async (req: Request, res: Response) => {
-  const { name, description, topic, creatorId } = req.body;
+  const { name, description, topic, creatorId, genre } = req.body;
 
   try {
-    if (!name || !description || !topic || !creatorId) {
+    if (!name || !description || !topic || !creatorId || !genre) {
         res.status(400).json({ message: 'Todos los campos son requeridos.' });
         return;
     }
@@ -26,6 +27,7 @@ export const createGroup = async (req: Request, res: Response) => {
       description,
       topic,
       creatorId,
+      genre
     });
 
     res.status(201).json({ message: 'Grupo creado exitosamente.', group: newGroup });
@@ -161,5 +163,85 @@ export const removeGroup = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error deleting the group.'});
+  }
+};
+
+export const getGroupsByName = async (req: Request, res: Response) => {
+  const { name } = req.body;
+  //console.log(`name: ${name}`);
+
+  try {
+    const queryOptions: any = {};
+
+    if (name) {
+      queryOptions.where = { name: { [Op.iLike]: `%${name}%` } };
+      queryOptions.attributes = ["id", "photo", "name", "bio"] ;
+    }
+    const groups = await Group.findAll(queryOptions);
+
+    if (groups.length === 0) {
+      res.status(404).json({ message: "No groups found for that search" });
+      return;
+    }
+
+    res.json(groups);
+    
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching group data", error });
+  }
+};
+
+export const getGroupsByGenre = async (req: Request, res: Response) => {
+  const { genre } = req.body;
+
+  try {
+    const queryOptions: any = {};
+
+    if (genre) {
+      queryOptions.where = {
+        genre: { [Op.contains]: [genre] },
+      };
+      queryOptions.attributes = ["id", "photo", "name", "bio"];
+    }
+
+    const groups = await Group.findAll(queryOptions);
+
+    if (groups.length === 0) {
+      res.status(404).json({ message: "No groups found for that genre" });
+      return;
+    }
+
+    res.json(groups);
+    
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching group data", error });
+  }
+};
+
+export const getAllGroupGenres = async (req: Request, res: Response) => {
+  try {
+    // Consulta directa a la base de datos usando Sequelize
+    const result = await sequelize.query(
+      `
+      SELECT DISTINCT UNNEST(genre) AS genre
+      FROM groups
+      WHERE genre IS NOT NULL
+      `,
+      { type: QueryTypes.SELECT }
+    );
+
+    // Extraer los géneros en un array plano
+    const genres = result.map((row: any) => row.genre);
+
+    if (genres.length === 0) {
+      res.status(404).json({ message: "No genres found" });
+      return;
+    }
+
+    res.json(genres);
+
+  } catch (error) {
+    console.error("Error fetching genres:", error);
+    res.status(500).json({ message: "Error fetching genres", error });
   }
 };

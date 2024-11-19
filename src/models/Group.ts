@@ -12,7 +12,7 @@ class Group extends Model {
   public photo!: string;
   public createdAt!: Date;
   public updatedAt!: Date;
-
+  public genre!: string; 
 }
 
 Group.init(
@@ -42,6 +42,10 @@ Group.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    genre: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: false,
+    }
   },
   {
     sequelize,
