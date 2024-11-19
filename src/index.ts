@@ -4,7 +4,8 @@ import sequelize from "./config/db";
 import userRoutes from "./routes/userRoutes";
 import bookRoutes from "./routes/bookRoutes";
 import reviewRoutes from "./routes/reviewRoutes";
-import groupRoutes from "./routes/groupRoutes"
+import groupRoutes from "./routes/groupRoutes";
+import groupDiscussionRoutes from "./routes/groupDiscussionRoutes"
 import bookShelfController from "./routes/bookShelfRoutes";
 import cors from "cors";
 import { BookShelf } from "./models/BookShelf";
@@ -12,6 +13,7 @@ import ReadingState from "./models/ReadingState";
 import Book from "./models/Book";
 import User from "./models/User";
 import {Group} from "./models/Group";
+import { GroupDiscussion } from "./models/GroupDiscussion";
 
 dotenv.config();
 
@@ -54,12 +56,23 @@ Group.belongsToMany(User, {
 ReadingState.belongsTo(Book, { foreignKey: "bookId" });
 Book.hasOne(ReadingState, { foreignKey: "bookId" });
 
+Group.hasMany(GroupDiscussion, {
+  foreignKey: "id"
+});
+
+GroupDiscussion.belongsTo(Group, {
+  foreignKey: "id"
+});
+
+
 app.use("/users", userRoutes);
 app.use("/books", bookRoutes);
 app.use("/reviews", reviewRoutes);
 app.use("/bookshelf", bookShelfController);
 app.use("/readingstate", require("./routes/readingStateRoutes").default);
 app.use('/groups', groupRoutes);
+app.use('/discussions', groupDiscussionRoutes);
+
 
 // Sync the models with the database and start the server
 sequelize

@@ -28,7 +28,6 @@ GroupDiscussion.init(
     groupId: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: DataTypes.NOW,
     },
 },
 {
