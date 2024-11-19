@@ -13,8 +13,8 @@ router.post('/create', createGroup);
 
 router.get('/:groupId/info', getGroupInfo); 
 router.get('/:groupId/members', getGroupMembers);
-router.patch('/:groupId/bio', updateGroupBio);
-router.patch('/:groupId/photo', updateGroupPhoto);
+router.patch('/:groupId/update-bio', updateGroupBio);
+router.patch('/:groupId/update-photo', updateGroupPhoto);
 router.delete('/:groupId/remove-group', removeGroup)
 
 

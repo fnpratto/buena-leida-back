@@ -92,15 +92,19 @@ export const getGroupMembers = async (req: Request, res: Response) => {
 
 export const updateGroupBio = async (req: Request, res: Response) => {
   const { groupId } = req.params;
-  const { bio } = req.body;
-  if (!groupId || !bio) {
-    res.status(400).json({ message: "Group ID and a new bio are required." });
+  const { bio, creatorId } = req.body;
+  if (!groupId || !bio || !creatorId) {
+    res.status(400).json({ message: "Group ID, creator ID and a new bio are required." });
     return;
   }
   try {
     const group = await Group.findByPk(groupId);
     if (!group) {
       res.status(404).json({ message: "Group not found."});
+      return;
+    }
+    if (creatorId != group.creatorId as any){
+      res.status(403).json({ message: "The user who wants to update the group biography isnt the creator."});
       return;
     }
     group.bio = bio;
@@ -116,16 +120,20 @@ export const updateGroupBio = async (req: Request, res: Response) => {
 
 export const updateGroupPhoto = async (req: Request, res: Response) => {
   const { groupId } = req.params;
-  const { groupPhoto } = req.body;
+  const { groupPhoto, creatorId } = req.body;
 
-  if (!groupId || !groupPhoto) {
-    res.status(400).json({ message: "Group ID and a new photo are required." });
+  if (!groupId || !groupPhoto || !creatorId) {
+    res.status(400).json({ message: "Group ID, creator ID and a new photo are required." });
     return;
   }
   try {
     const group = await Group.findByPk(groupId);
     if (!group) {
       res.status(404).json({ message: "Group not found."});
+      return;
+    }
+    if (creatorId != group.creatorId as any){
+      res.status(403).json({ message: "The user who wants to update the photo group isnt the creator."});
       return;
     }
     group.photo = groupPhoto;
@@ -140,10 +148,14 @@ export const updateGroupPhoto = async (req: Request, res: Response) => {
 
 export const removeGroup = async (req: Request, res: Response) => {
   const { groupId } = req.params;
-  const { userId } = req.query;
+  const { creatorId } = req.body;
 
-  if (!groupId || !userId) {
-    res.status(400).json({ message: "Group ID and User ID are required." });
+  if (!groupId) {
+    res.status(400).json({ message: "Group ID is required." });
+    return;
+  }
+  if (!creatorId) {
+    res.status(400).json({ message: "User ID is required." });
     return;
   }
   try {
@@ -152,8 +164,8 @@ export const removeGroup = async (req: Request, res: Response) => {
       res.status(404).json({ message: "Group not found."});
       return;
     }
-    if (userId != group.creatorId as any){
-      res.status(404).json({ message: "The user who wants to delete de group isnt the creator."});
+    if (creatorId != group.creatorId as any){
+      res.status(403).json({ message: "The user who wants to delete the group isnt the creator."});
       return;
     }
     await group.destroy();
