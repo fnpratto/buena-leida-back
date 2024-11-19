@@ -13,46 +13,33 @@ class GroupDiscussion extends Model {
 GroupDiscussion.init(
 {
     id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
     },
     name: {
-    type: DataTypes.STRING,
-    allowNull: false,
+        type: DataTypes.STRING,
+        allowNull: false,
     },
     creatorId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
+        type: DataTypes.INTEGER,
+        allowNull: false,
     },
     groupId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: Group,
+            key: "id",
+        },
     },
 },
 {
     sequelize,
     modelName: "GroupDiscussion",
-    tableName: "groupDiscussion",
+    tableName: "groupDiscussions",
     timestamps: false,
 }
 );
 
-const GroupWithGroupDiscussions = sequelize.define("GroupWithGroupDiscussions", {
-groupId: {
-    type: DataTypes.INTEGER,
-    references: {
-    model: Group,
-    key: "id",
-    },
-},
-GroupDiscussionsId: {
-    type: DataTypes.INTEGER,
-    references: {
-    model: GroupDiscussion,
-    key: "id",
-    },
-},
-});
-
-export { GroupDiscussion, GroupWithGroupDiscussions };
+export { GroupDiscussion};
