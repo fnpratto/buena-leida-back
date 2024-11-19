@@ -40,17 +40,17 @@ GroupDiscussion.init(
 );
 
 const GroupWithGroupDiscussions = sequelize.define("GroupWithGroupDiscussions", {
-bookshelfId: {
-    type: DataTypes.INTEGER,
-    references: {
-    model: GroupDiscussion,
-    key: "id",
-    },
-},
-bookId: {
+groupId: {
     type: DataTypes.INTEGER,
     references: {
     model: Group,
+    key: "id",
+    },
+},
+GroupDiscussionsId: {
+    type: DataTypes.INTEGER,
+    references: {
+    model: GroupDiscussion,
     key: "id",
     },
 },
