@@ -88,3 +88,51 @@ export const getGroupMembers = async (req: Request, res: Response) => {
   }
 };
   
+
+export const updateGroupBio = async (req: Request, res: Response) => {
+  const { groupId } = req.params;
+  const { bio } = req.body;
+  if (!groupId || !bio) {
+    res.status(400).json({ message: "Group ID and a new bio are required." });
+    return;
+  }
+  try {
+    const group = await Group.findByPk(groupId);
+    if (!group) {
+      res.status(404).json({ message: "Group not found."});
+      return;
+    }
+    group.bio = bio;
+    await group.save();
+
+    res.json({ message: "Bio of group updated successfully"});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error updating biography.'});
+  }
+};
+
+
+export const updateGroupPhoto = async (req: Request, res: Response) => {
+  const { groupId } = req.params;
+  const { groupPhoto } = req.body;
+
+  if (!groupId || !groupPhoto) {
+    res.status(400).json({ message: "Group ID and a new photo are required." });
+    return;
+  }
+  try {
+    const group = await Group.findByPk(groupId);
+    if (!group) {
+      res.status(404).json({ message: "Group not found."});
+      return;
+    }
+    group.photo = groupPhoto;
+    await group.save();
+
+    res.json({ message: "Photo of group updated successfully"});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error updating the group photo.'});
+  }
+};
