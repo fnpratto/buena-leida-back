@@ -13,6 +13,7 @@ class Group extends Model {
   public createdAt!: Date;
   public updatedAt!: Date;
   public genre!: string; 
+  public membersCount! : number;
 }
 
 Group.init(
@@ -44,6 +45,10 @@ Group.init(
     },
     genre: {
       type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: false,
+    },
+    membersCount: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     }
   },

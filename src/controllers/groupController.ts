@@ -5,6 +5,7 @@ import { Op } from 'sequelize';
 import { QueryTypes } from 'sequelize';
 import sequelize from "../config/db";
 import { GroupDiscussion } from '../models/GroupDiscussion';
+import { group } from 'console';
 
 
 export const createGroup = async (req: Request, res: Response) => {
@@ -22,15 +23,25 @@ export const createGroup = async (req: Request, res: Response) => {
      return;
     }
 
+    const creatorUser = await User.findByPk( creatorId );
+
+    let membersCount = 1;
     const newGroup = await Group.create({
       name,
       description,
       topic,
       creatorId,
-      genre
+      genre,
+      membersCount
     });
 
+    const newGroupUser = await sequelize.models.GroupUser.create({
+      groupId: newGroup.id,
+      userId: creatorId
+    });
+    
     res.status(201).json({ message: 'Grupo creado exitosamente.', group: newGroup });
+    
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error al crear el grupo.' });
@@ -175,7 +186,7 @@ export const getGroupsByName = async (req: Request, res: Response) => {
 
     if (name) {
       queryOptions.where = { name: { [Op.iLike]: `%${name}%` } };
-      queryOptions.attributes = ["id", "photo", "name", "bio"] ;
+      queryOptions.attributes = ["id", "photo", "name", "bio", "membersCount"] ;
     }
     const groups = await Group.findAll(queryOptions);
 
@@ -183,6 +194,12 @@ export const getGroupsByName = async (req: Request, res: Response) => {
       res.status(404).json({ message: "No groups found for that search" });
       return;
     }
+
+    //for (let group in groups) {
+    //  group = (group as Group);
+    //  const {id} = group;
+    //  const cantUsers = GroupUser.findAll( {where: {groupId : group.id}} )
+    //}
 
     res.json(groups);
     
