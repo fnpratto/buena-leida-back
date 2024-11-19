@@ -1,10 +1,13 @@
 import { Router } from 'express';
-import { createGroupDiscussion
+import { createGroupDiscussion,
+    getDiscussions
 } from '../controllers/groupDiscussionController';
 
 const router = Router();
 
 
-router.post('/:groupId/discussion/', createGroupDiscussion);
+router.post('/:groupId/create-discussion/', createGroupDiscussion);
+router.get('/:groupId', getDiscussions);
+
 
 export default router;

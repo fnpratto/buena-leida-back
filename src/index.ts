@@ -57,11 +57,14 @@ ReadingState.belongsTo(Book, { foreignKey: "bookId" });
 Book.hasOne(ReadingState, { foreignKey: "bookId" });
 
 Group.hasMany(GroupDiscussion, {
-  foreignKey: "id"
+  foreignKey: "id",
+  as: "discussions",
+  onDelete: "CASCADE"
 });
 
 GroupDiscussion.belongsTo(Group, {
-  foreignKey: "id"
+  foreignKey: "id",
+  as: "group"
 });
 
 

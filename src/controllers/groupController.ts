@@ -3,6 +3,7 @@ import {Group, GroupUser} from '../models/Group';
 import User from '../models/User'; 
 import { Op } from 'sequelize';
 import sequelize from "../config/db";
+import { GroupDiscussion } from '../models/GroupDiscussion';
 
 
 export const createGroup = async (req: Request, res: Response) => {
@@ -134,5 +135,31 @@ export const updateGroupPhoto = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error updating the group photo.'});
+  }
+};
+
+export const removeGroup = async (req: Request, res: Response) => {
+  const { groupId } = req.params;
+  const { userId } = req.query;
+
+  if (!groupId || !userId) {
+    res.status(400).json({ message: "Group ID and User ID are required." });
+    return;
+  }
+  try {
+    const group = await Group.findByPk(groupId);
+    if (!group) {
+      res.status(404).json({ message: "Group not found."});
+      return;
+    }
+    if (userId != group.creatorId as any){
+      res.status(404).json({ message: "The user who wants to delete de group isnt the creator."});
+      return;
+    }
+    await group.destroy();
+    res.json({ message: "Group deleted succesfully"});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error deleting the group.'});
   }
 };
