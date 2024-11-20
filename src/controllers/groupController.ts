@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import {Group, GroupUser} from '../models/Group';
+import {Group, GroupUsers} from '../models/Group';
 import User from '../models/User'; 
 import { Op } from 'sequelize';
 import { QueryTypes } from 'sequelize';
@@ -9,10 +9,10 @@ import { group } from 'console';
 
 
 export const createGroup = async (req: Request, res: Response) => {
-  const { name, description, creatorId, genre } = req.body;
+  const { name, bio, creatorId, genre } = req.body;
 
   try {
-    if (!name || !description || !creatorId || !genre) {
+    if (!name || !bio || !creatorId || !genre) {
         res.status(400).json({ message: 'Todos los campos son requeridos.' });
         return;
     }
@@ -32,13 +32,13 @@ export const createGroup = async (req: Request, res: Response) => {
     let membersCount = 1;
     const newGroup = await Group.create({
       name,
-      description,
+      bio,
       creatorId,
       genre,
       membersCount
     });
 
-    await sequelize.models.GroupUser.create({
+    await sequelize.models.GroupUsers.create({
       groupId: newGroup.groupId,
       userId: creatorId
     });
@@ -60,7 +60,7 @@ export const getGroupInfo = async (
     try {
       const group = await Group.findOne({
         where: { groupId: groupId },
-        attributes: ['groupId', 'name', 'bio', 'photo', 'creatorId', 'description', 'genre'],
+        attributes: ['groupId', 'name', 'photo', 'creatorId', 'bio', 'genre'],
       });
   
       if (!group) {
@@ -123,7 +123,7 @@ export const updateGroupBio = async (req: Request, res: Response) => {
       return;
     }
     if (creatorId != group.creatorId as any){
-      res.status(403).json({ message: "The user who wants to update the group biography isnt the creator."});
+      res.status(403).json({ message: "The user who wants to update the group bio isnt the creator."});
       return;
     }
     group.bio = bio;
@@ -132,7 +132,7 @@ export const updateGroupBio = async (req: Request, res: Response) => {
     res.json({ message: "Bio of group updated successfully"});
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error updating biography.'});
+    res.status(500).json({ message: 'Error updating bio.'});
   }
 };
 
@@ -225,6 +225,8 @@ export const getGroupsByName = async (req: Request, res: Response) => {
 
 export const getGroupsByGenre = async (req: Request, res: Response) => {
   const { genre } = req.body;
+  const { sort } = req.query;
+
 
   try {
     const queryOptions: any = {};
@@ -235,7 +237,9 @@ export const getGroupsByGenre = async (req: Request, res: Response) => {
       };
       queryOptions.attributes = ["groupId", "photo", "name", "bio"];
     }
-
+    if (sort === "popularity") {
+      queryOptions.order = [["membersCount", "DESC"]];
+    }
     const groups = await Group.findAll(queryOptions);
 
     if (groups.length === 0) {
@@ -278,6 +282,40 @@ export const getAllGroupGenres = async (req: Request, res: Response) => {
   }
 };
 
+export const updateGroupGenre = async (req: Request, res: Response) => {
+  const { groupId } = req.params;  
+  const { creatorId, genre } = req.body;  
+
+  if (!groupId || !creatorId || !genre) {
+    res.status(400).json({ message: "Group ID, creator ID, and new genre are required." });
+    return;
+  }
+
+  try {
+    const group = await Group.findByPk(groupId);
+
+    if (!group) {
+      res.status(404).json({ message: "Group not found." });
+      return;
+    }
+
+    if (creatorId !== group.creatorId) {
+      res.status(403).json({ message: "Only the group creator can update the genre." });
+      return;
+    }
+    await group.update({
+      genre: genre
+    })
+
+
+    res.json({ message: "Group genre updated successfully."});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error updating the group genre.", error });
+  }
+};
+
+
 export const enterGroup = async (req: Request, res: Response) => {
   const { groupId, userId } = req.body;
 
@@ -299,7 +337,7 @@ export const enterGroup = async (req: Request, res: Response) => {
       return;
     }
 
-    const existingGroupUser = await GroupUser.findOne({
+    const existingGroupUser = await GroupUsers.findOne({
       where: { groupId, userId }
     });
 
@@ -308,7 +346,7 @@ export const enterGroup = async (req: Request, res: Response) => {
       return;
     }
 
-    await sequelize.models.GroupUser.create({
+    await sequelize.models.GroupUsers.create({
       groupId,
       userId
     });
@@ -344,7 +382,7 @@ export const leaveGroup = async (req: Request, res: Response) => {
       return;
     }
 
-    const existingGroupUser = await GroupUser.findOne({
+    const existingGroupUser = await GroupUsers.findOne({
       where: { groupId, userId }
     });
 
