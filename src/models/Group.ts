@@ -33,7 +33,7 @@ Group.init(
     },
     photo: {
       type: DataTypes.STRING,
-      defaultValue: 'default-group-photo.jpg', // Ruta a la foto predeterminada.
+      defaultValue: 'https://firebasestorage.googleapis.com/v0/b/buena-leida.appspot.com/o/profiles%2Fdefault.jpg?alt=media&token=100a1fe2-fd46-4fc5-9d11-e7b78ed946f5', 
     },
     creatorId: {
       type: DataTypes.INTEGER,
