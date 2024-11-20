@@ -19,7 +19,7 @@ router.post('/create', createGroup);
 router.post('/enterGroup', enterGroup);
 router.delete('/leaveGroup', leaveGroup);
 
-router.get('/:name', getGroupsByName);
+router.get('/name/:name', getGroupsByName);
 router.get('/groups-by-genre/:genre', getGroupsByGenre);
 router.get('/genres', getAllGroupGenres);
 router.get('/:groupId/info', getGroupInfo); 

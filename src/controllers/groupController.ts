@@ -266,6 +266,11 @@ export const getAllGroupGenres = async (req: Request, res: Response) => {
       { type: QueryTypes.SELECT }
     );
 
+    if (!result || result.length === 0) {
+      res.status(404).json({ message: "No results" });
+      return;
+    }
+
     // Extraer los géneros en un array plano
     const genres = result.map((row: any) => row.genre);
 
