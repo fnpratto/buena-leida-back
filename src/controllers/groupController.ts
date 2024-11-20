@@ -196,7 +196,7 @@ export const removeGroup = async (req: Request, res: Response) => {
 };
 
 export const getGroupsByName = async (req: Request, res: Response) => {
-  const { name } = req.body;
+  const { name } = req.params;
   const { sort } = req.query;
 
   try {
@@ -224,7 +224,7 @@ export const getGroupsByName = async (req: Request, res: Response) => {
 };
 
 export const getGroupsByGenre = async (req: Request, res: Response) => {
-  const { genre } = req.body;
+  const { genre } = req.params;
   const { sort } = req.query;
 
 

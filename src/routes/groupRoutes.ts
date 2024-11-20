@@ -19,8 +19,8 @@ router.post('/create', createGroup);
 router.post('/enterGroup', enterGroup);
 router.delete('/leaveGroup', leaveGroup);
 
-router.get('/', getGroupsByName);
-router.get('/groups-by-genre', getGroupsByGenre);
+router.get('/:name', getGroupsByName);
+router.get('/groups-by-genre/:genre', getGroupsByGenre);
 router.get('/genres', getAllGroupGenres);
 router.get('/:groupId/info', getGroupInfo); 
 router.get('/:groupId/members', getGroupMembers);
