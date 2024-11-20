@@ -277,3 +277,36 @@ export const getAllGroupGenres = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error fetching genres", error });
   }
 };
+
+export const updateGroupGenre = async (req: Request, res: Response) => {
+  const { groupId } = req.params;  
+  const { creatorId, genre } = req.body;  
+
+  if (!groupId || !creatorId || !genre) {
+    res.status(400).json({ message: "Group ID, creator ID, and new genre are required." });
+    return;
+  }
+
+  try {
+    const group = await Group.findByPk(groupId);
+
+    if (!group) {
+      res.status(404).json({ message: "Group not found." });
+      return;
+    }
+
+    if (creatorId !== group.creatorId) {
+      res.status(403).json({ message: "Only the group creator can update the genre." });
+      return;
+    }
+    await group.update({
+      genre: genre
+    })
+
+
+    res.json({ message: "Group genre updated successfully.", group });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error updating the group genre.", error });
+  }
+};
