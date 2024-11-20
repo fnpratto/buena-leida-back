@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import Book from "../models/Book";
 import { Op } from "sequelize";
+import { QueryTypes } from 'sequelize';
+import sequelize from "../config/db";
 
 export const getBooks = async (req: Request, res: Response) => {
   const { genre, sort } = req.body;
@@ -273,5 +275,30 @@ export const getRatingsCountByISBN = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching ratings count:", error);
     res.status(500).json({ message: "Error fetching ratings count", error });
+  }
+};
+
+export const getAllGenres = async (req: Request, res: Response) => {
+  try {
+    const result = await sequelize.query(
+      `
+     SELECT DISTINCT genre FROM books
+      WHERE genre IS NOT NULL
+      `,
+      { type: QueryTypes.SELECT }
+    );
+
+    const genres = result.map((row: any) => row.genre);
+
+    if (genres.length === 0) {
+      res.status(404).json({ message: "No genres found" });
+      return;
+    }
+
+    res.json(genres);
+
+  } catch (error) {
+    console.error("Error fetching genres:", error);
+    res.status(500).json({ message: "Error fetching genres", error });
   }
 };

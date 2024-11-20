@@ -9,7 +9,8 @@ import { createGroup,
     getGroupsByGenre,
     getAllGroupGenres,
     enterGroup,
-    leaveGroup
+    leaveGroup,
+    updateGroupGenre
 } from '../controllers/groupController';
 
 const router = Router();
@@ -25,7 +26,8 @@ router.get('/:groupId/info', getGroupInfo);
 router.get('/:groupId/members', getGroupMembers);
 router.patch('/:groupId/update-bio', updateGroupBio);
 router.patch('/:groupId/update-photo', updateGroupPhoto);
-router.delete('/:groupId/remove-group', removeGroup)
+router.delete('/:groupId/remove-group', removeGroup);
+router.patch("/:groupId/update-genre", updateGroupGenre);
 
 
 export default router;

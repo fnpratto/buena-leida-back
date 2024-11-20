@@ -1,0 +1,285 @@
+[
+    {
+      "id": 1,
+      "iduser": 100,
+      "isbn": 0,
+      "texto": "Este libro es mágico de principio a fin. La historia de Harry Potter y sus amigos es cautivadora. Muy recomendado para jóvenes y adultos.",
+      "calification": 5
+    },
+    {
+      "id": 2,
+      "iduser": 101,
+      "isbn": 0,
+      "texto": "Aunque interesante, sentí que la historia fue demasiado predecible. Tal vez esperaba algo más complejo.",
+      "calification": 3
+    },
+    {
+      "id": 3,
+      "iduser": 102,
+      "isbn": 1,
+      "texto": "Los Juegos del Hambre te atrapan desde la primera página. La tensión y los giros en la trama son increíbles. ¡Imposible dejar de leer!",
+      "calification": 5
+    },
+    {
+      "id": 4,
+      "iduser": 103,
+      "isbn": 1,
+      "texto": "Esperaba más desarrollo de los personajes secundarios. Aun así, la historia es entretenida y fácil de leer.",
+      "calification": 4
+    },
+    {
+      "id": 5,
+      "iduser": 104,
+      "isbn": 2,
+      "texto": "Una historia de amor entre una humana y un vampiro, pero con muchos clichés. No es lo mío, pero entiendo su popularidad.",
+      "calification": 2
+    },
+    {
+      "id": 6,
+      "iduser": 105,
+      "isbn": 2,
+      "texto": "Me encantó la historia de amor y el misterio en torno a los vampiros. Este libro fue emocionante y entretenido.",
+      "calification": 4
+    },
+    {
+      "id": 7,
+      "iduser": 106,
+      "isbn": 3,
+      "texto": "El Código Da Vinci es una obra maestra del suspenso. Los enigmas y secretos mantienen la intriga hasta el final.",
+      "calification": 5
+    },
+    {
+      "id": 8,
+      "iduser": 107,
+      "isbn": 3,
+      "texto": "Interesante trama, pero algunas partes se sienten forzadas. Aun así, disfruté el misterio y el ritmo de la historia.",
+      "calification": 4
+    },
+    {
+      "id": 9,
+      "iduser": 108,
+      "isbn": 4,
+      "texto": "Un thriller psicológico bien logrado. La protagonista es compleja y el misterio me mantuvo intrigado todo el tiempo.",
+      "calification": 5
+    },
+    {
+      "id": 10,
+      "iduser": 109,
+      "isbn": 4,
+      "texto": "Aunque la historia es buena, me resultó difícil conectar con los personajes. Esperaba más profundidad en la trama.",
+      "calification": 3
+    },
+    {
+      "id": 11,
+      "iduser": 100,
+      "isbn": 5,
+      "texto": "Un libro conmovedor y triste. La amistad entre Bruno y Shmuel es hermosa, pero el final es devastador.",
+      "calification": 5
+    },
+    {
+      "id": 12,
+      "iduser": 101,
+      "isbn": 5,
+      "texto": "La trama es muy predecible. El tema es interesante, pero sentí que faltaba algo para conectar con los personajes.",
+      "calification": 3
+    },
+    {
+      "id": 13,
+      "iduser": 102,
+      "isbn": 6,
+      "texto": "Hermosa historia de resistencia y esperanza en tiempos oscuros. Me atrapó desde la primera página.",
+      "calification": 5
+    },
+    {
+      "id": 14,
+      "iduser": 103,
+      "isbn": 6,
+      "texto": "Es un buen libro, pero en algunos momentos la narrativa es un poco lenta. Aun así, disfruté el mensaje de la historia.",
+      "calification": 4
+    },
+    {
+      "id": 15,
+      "iduser": 104,
+      "isbn": 7,
+      "texto": "Una historia de amor conmovedora y realista. La forma en que los personajes enfrentan sus dificultades es inspiradora.",
+      "calification": 5
+    },
+    {
+      "id": 16,
+      "iduser": 105,
+      "isbn": 7,
+      "texto": "Un buen libro para adolescentes, aunque en algunos puntos la historia se siente demasiado idealista.",
+      "calification": 3
+    },
+    {
+      "id": 17,
+      "iduser": 106,
+      "isbn": 8,
+      "texto": "Una historia intensa y bien escrita. Te hace reflexionar sobre la libertad y la opresión. Totalmente recomendable.",
+      "calification": 5
+    },
+    {
+      "id": 18,
+      "iduser": 107,
+      "isbn": 8,
+      "texto": "La historia es buena, pero encontré la narrativa algo densa. No conecté tanto como esperaba.",
+      "calification": 3
+    },
+    {
+      "id": 19,
+      "iduser": 108,
+      "isbn": 9,
+      "texto": "Una historia increíble de supervivencia y ciencia. Mark es un protagonista admirable y divertido. ¡Gran libro!",
+      "calification": 5
+    },
+    {
+      "id": 20,
+      "iduser": 109,
+      "isbn": 9,
+      "texto": "Interesante enfoque científico, pero algunas partes se sienten lentas. Aun así, disfruté la historia de supervivencia.",
+      "calification": 4
+    },
+    {
+      "id": 21,
+      "iduser": 100,
+      "isbn": 10,
+      "texto": "Un excelente libro lleno de aventura y misterio. Hogwarts es un mundo fascinante y la historia de la cámara secreta es intrigante.",
+      "calification": 5
+    },
+    {
+      "id": 22,
+      "iduser": 101,
+      "isbn": 10,
+      "texto": "Es entretenido, pero sentí que la historia es algo repetitiva. Los personajes no evolucionan mucho en esta entrega.",
+      "calification": 3
+    },
+    {
+      "id": 23,
+      "iduser": 102,
+      "isbn": 11,
+      "texto": "La historia es genial, llena de suspenso y emociones. La aparición de Sirius Black le da un giro muy interesante.",
+      "calification": 5
+    },
+    {
+      "id": 24,
+      "iduser": 103,
+      "isbn": 11,
+      "texto": "Es bueno, pero esperaba más de este libro. Algunos detalles de la historia no me parecieron muy realistas.",
+      "calification": 3
+    },
+    {
+        "id": 25,
+        "iduser": 105,
+        "isbn": 12,
+        "texto": "La historia de Harry Potter se vuelve aún más emocionante en el Torneo de los Tres Magos. La mezcla de suspenso y magia es perfecta.",
+        "calification": 5
+    },
+    {
+        "id": 26,
+        "iduser": 106,
+        "isbn": 12,
+        "texto": "Me gustó, pero siento que la trama se alarga demasiado. Aun así, buena continuación.",
+        "calification": 3
+    },
+    {
+        "id": 27,
+        "iduser": 107,
+        "isbn": 13,
+        "texto": "La Orden del Fénix es uno de los mejores libros de la saga. La acción y las revelaciones sobre los personajes son impresionantes.",
+        "calification": 5
+    },
+    {
+        "id": 28,
+        "iduser": 108,
+        "isbn": 13,
+        "texto": "Algunos capítulos fueron un poco lentos, pero en general es una buena lectura.",
+        "calification": 3
+    },
+    {
+        "id": 29,
+        "iduser": 109,
+        "isbn": 14,
+        "texto": "Excelente exploración del pasado de Voldemort. Muy oscura y fascinante.",
+        "calification": 5
+    },
+    {
+        "id": 30,
+        "iduser": 100,
+        "isbn": 14,
+        "texto": "No fue tan emocionante como esperaba, aunque tiene buenos momentos.",
+        "calification": 3
+    },
+    {
+        "id": 31,
+        "iduser": 101,
+        "isbn": 15,
+        "texto": "Un final épico para Harry Potter. La emoción y la acción no dejan de crecer. Lo recomiendo totalmente.",
+        "calification": 5
+    },
+    {
+        "id": 32,
+        "iduser": 102,
+        "isbn": 15,
+        "texto": "Me gustó el cierre de la historia, aunque algunos personajes tuvieron menos desarrollo.",
+        "calification": 4
+    },
+    {
+        "id": 33,
+        "iduser": 103,
+        "isbn": 16,
+        "texto": "En llamas continúa la saga con mucha intensidad. Katniss muestra su valentía en esta emocionante secuela.",
+        "calification": 5
+    },
+    {
+        "id": 34,
+        "iduser": 104,
+        "isbn": 16,
+        "texto": "La trama es un poco predecible en algunas partes, pero sigue siendo entretenido.",
+        "calification": 3
+    },
+    {
+        "id": 35,
+        "iduser": 105,
+        "isbn": 17,
+        "texto": "Un final satisfactorio para la trilogía de Los Juegos del Hambre. Katniss es un personaje increíble.",
+        "calification": 5
+    },
+    {
+        "id": 36,
+        "iduser": 106,
+        "isbn": 17,
+        "texto": "Un poco decepcionante en comparación con los libros anteriores. La trama se siente forzada en algunos momentos.",
+        "calification": 2
+    },
+    {
+        "id": 37,
+        "iduser": 107,
+        "isbn": 18,
+        "texto": "Una versión interesante de Crepúsculo, aunque prefiero la original. Tiene una perspectiva fresca.",
+        "calification": 4
+    },
+    {
+        "id": 38,
+        "iduser": 108,
+        "isbn": 18,
+        "texto": "No logra captar la misma esencia que el primer Crepúsculo. No aporta mucho.",
+        "calification": 2
+    },
+    {
+        "id": 39,
+        "iduser": 109,
+        "isbn": 19,
+        "texto": "Un concepto intrigante y una trama llena de suspenso. 'La huésped' mantiene al lector cautivado.",
+        "calification": 5
+    },
+    {
+        "id": 40,
+        "iduser": 100,
+        "isbn": 19,
+        "texto": "La historia se hace larga y un poco repetitiva. No fue lo que esperaba.",
+        "calification": 3
+    } 
+        
+
+  ]
+  

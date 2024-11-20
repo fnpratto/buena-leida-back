@@ -314,8 +314,6 @@ export const updateGroupGenre = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error updating the group genre.", error });
   }
 };
-
-
 export const enterGroup = async (req: Request, res: Response) => {
   const { groupId, userId } = req.body;
 
@@ -402,3 +400,4 @@ export const leaveGroup = async (req: Request, res: Response) => {
     res.status(500).json({ message: "An unexpected error occurred." });
   }
 }
+
