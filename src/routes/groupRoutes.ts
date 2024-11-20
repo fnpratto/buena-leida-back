@@ -7,12 +7,16 @@ import { createGroup,
     removeGroup,
     getGroupsByName,
     getGroupsByGenre,
-    getAllGroupGenres
+    getAllGroupGenres,
+    enterGroup,
+    leaveGroup
 } from '../controllers/groupController';
 
 const router = Router();
 
 router.post('/create', createGroup);
+router.post('/enterGroup', enterGroup);
+router.delete('/leaveGroup', leaveGroup);
 
 router.get('/', getGroupsByName);
 router.get('/groups-by-genre', getGroupsByGenre);
