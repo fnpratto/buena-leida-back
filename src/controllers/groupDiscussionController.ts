@@ -49,16 +49,34 @@ export const getDiscussions = async (req: Request, res: Response) => {
             return;
         };
         const discussions = await GroupDiscussion.findAll({
-            where: {id: groupId},
-            attributes: ["id", "name", "creatorId"]
+            where: {groupId: groupId},
+            attributes: ["discussionId", "name", "creatorId"]
         });
-
         if (discussions.length === 0){
             res.status(404).json({ message: "No discussions found for the group." });
             return;
         }
+        const creatorUsersIds = discussions.map((discussion) => discussion.creatorId);
 
-        res.status(200).json(discussions);
+        const creatorUsers = await User.findAll({
+          where: { id: creatorUsersIds },
+          attributes: ["id", "username", "name", "profilePhoto"],
+        });
+        const discussionsWithCreator = discussions.map((discussion) => {
+            const creatorUser = creatorUsers.find((user) => user.id === discussion.creatorId);
+            return {
+              discussionId: discussion.discussionId,
+              name: discussion.name,
+              creatorUser: creatorUser ? { 
+                username: creatorUser.username, 
+                name: creatorUser.name, 
+                profilePhoto: creatorUser.profilePhoto 
+              } : null,
+            };
+          });
+
+
+        res.status(200).json(discussionsWithCreator);
     } catch (error) {
         console.error("Error getting group discussions:", error);
         res.status(500).json({

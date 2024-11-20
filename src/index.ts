@@ -42,28 +42,30 @@ Book.belongsToMany(BookShelf, {
 });
 
 User.belongsToMany(Group, {
-  through: "UserGroups", 
+  through: "GroupUsers", 
   foreignKey: "userId", 
-  otherKey: "groupId",  
+  otherKey: "groupId",
+  as: "groups"
 });
 
 Group.belongsToMany(User, {
-  through: "UserGroups", 
+  through: "GroupUsers", 
   foreignKey: "groupId", 
-  otherKey: "userId",    
+  otherKey: "userId",
+  as: "users"
 });
 
 ReadingState.belongsTo(Book, { foreignKey: "bookId" });
 Book.hasOne(ReadingState, { foreignKey: "bookId" });
 
 Group.hasMany(GroupDiscussion, {
-  foreignKey: "id",
+  foreignKey: "groupId",
   as: "discussions",
   onDelete: "CASCADE"
 });
 
 GroupDiscussion.belongsTo(Group, {
-  foreignKey: "id",
+  foreignKey: "groupId",
   as: "group"
 });
 

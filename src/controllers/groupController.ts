@@ -9,10 +9,10 @@ import { group } from 'console';
 
 
 export const createGroup = async (req: Request, res: Response) => {
-  const { name, description, topic, creatorId, genre } = req.body;
+  const { name, description, creatorId, genre } = req.body;
 
   try {
-    if (!name || !description || !topic || !creatorId || !genre) {
+    if (!name || !description || !creatorId || !genre) {
         res.status(400).json({ message: 'Todos los campos son requeridos.' });
         return;
     }
@@ -24,19 +24,22 @@ export const createGroup = async (req: Request, res: Response) => {
     }
 
     const creatorUser = await User.findByPk( creatorId );
+    if (!creatorUser){
+      res.status(400).json({ message: 'Inexistent user.' });
+      return;
+    }
 
     let membersCount = 1;
     const newGroup = await Group.create({
       name,
       description,
-      topic,
       creatorId,
       genre,
       membersCount
     });
 
-    const newGroupUser = await sequelize.models.GroupUser.create({
-      groupId: newGroup.id,
+    await sequelize.models.GroupUser.create({
+      groupId: newGroup.groupId,
       userId: creatorId
     });
     
@@ -56,8 +59,8 @@ export const getGroupInfo = async (
   
     try {
       const group = await Group.findOne({
-        where: { id: groupId },
-        attributes: ['id', 'name', 'bio', 'photo', 'creatorId', 'description', 'topic'],
+        where: { groupId: groupId },
+        attributes: ['groupId', 'name', 'bio', 'photo', 'creatorId', 'description', 'genre'],
       });
   
       if (!group) {
@@ -83,11 +86,14 @@ export const getGroupMembers = async (req: Request, res: Response) => {
 
   try {
     const group = await Group.findByPk(groupId, {
-      include: {
-        model: User,
-        through: { attributes: [] },
-        attributes: ["id", "username", "realName", "profilePhoto"], // Adjust fields as needed
-      },
+      include:[ 
+        {
+          model: User,
+          as: "users",
+          through: { attributes: [] },
+          attributes: ["id", "username", "name", "profilePhoto"],
+        },
+      ]
     });
 
     if (!group) {
@@ -95,7 +101,7 @@ export const getGroupMembers = async (req: Request, res: Response) => {
       return;
     }
 
-    res.status(200).json(group);
+    res.status(200).json(group.users);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error al obtener los miembros del grupo.' });
@@ -191,14 +197,17 @@ export const removeGroup = async (req: Request, res: Response) => {
 
 export const getGroupsByName = async (req: Request, res: Response) => {
   const { name } = req.body;
-  //console.log(`name: ${name}`);
+  const { sort } = req.query;
 
   try {
     const queryOptions: any = {};
 
     if (name) {
       queryOptions.where = { name: { [Op.iLike]: `%${name}%` } };
-      queryOptions.attributes = ["id", "photo", "name", "bio", "membersCount"] ;
+      queryOptions.attributes = ["groupId", "photo", "name", "bio", "membersCount"] ;
+    }
+    if (sort === "popularity") {
+      queryOptions.order = [["membersCount", "DESC"]];
     }
     const groups = await Group.findAll(queryOptions);
 
@@ -206,12 +215,6 @@ export const getGroupsByName = async (req: Request, res: Response) => {
       res.status(404).json({ message: "No groups found for that search" });
       return;
     }
-
-    //for (let group in groups) {
-    //  group = (group as Group);
-    //  const {id} = group;
-    //  const cantUsers = GroupUser.findAll( {where: {groupId : group.id}} )
-    //}
 
     res.json(groups);
     
@@ -230,7 +233,7 @@ export const getGroupsByGenre = async (req: Request, res: Response) => {
       queryOptions.where = {
         genre: { [Op.contains]: [genre] },
       };
-      queryOptions.attributes = ["id", "photo", "name", "bio"];
+      queryOptions.attributes = ["groupId", "photo", "name", "bio"];
     }
 
     const groups = await Group.findAll(queryOptions);

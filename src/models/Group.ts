@@ -3,10 +3,9 @@ import sequelize from "../config/db";
 import User from "./User";
 
 class Group extends Model {
-  public id!: number;
+  public groupId!: number;
   public name!: string;
   public description!: string;
-  public topic!: string;
   public creatorId!: number;
   public bio!: string;
   public photo!: string;
@@ -14,10 +13,16 @@ class Group extends Model {
   public updatedAt!: Date;
   public genre!: string; 
   public membersCount! : number;
+  public users?: User[];
 }
 
 Group.init(
   {
+    groupId: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -25,10 +30,6 @@ Group.init(
     },
     description: {
       type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    topic: {
-      type: DataTypes.STRING,
       allowNull: false,
     },
     bio: {
@@ -65,7 +66,7 @@ const GroupUser = sequelize.define("GroupUser", {
     type: DataTypes.INTEGER,
     references: {
       model: Group,
-      key: "id",
+      key: "groupId",
     },
     onDelete: "CASCADE",
     allowNull: false,

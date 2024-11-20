@@ -4,7 +4,7 @@ import { Group } from "./Group";
 
 
 class GroupDiscussion extends Model {
-  public id!: number;
+  public discussionId!: number;
   public name!: string;
   public creatorId!: number;
   public groupId!: number;
@@ -12,7 +12,7 @@ class GroupDiscussion extends Model {
 
 GroupDiscussion.init(
 {
-    id: {
+    discussionId: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
@@ -30,7 +30,7 @@ GroupDiscussion.init(
         allowNull: false,
         references: {
             model: Group,
-            key: "id",
+            key: "groupId",
         },
     },
 },
