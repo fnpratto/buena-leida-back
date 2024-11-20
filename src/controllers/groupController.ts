@@ -60,7 +60,7 @@ export const getGroupInfo = async (
     try {
       const group = await Group.findOne({
         where: { groupId: groupId },
-        attributes: ['groupId', 'name', 'photo', 'creatorId', 'description', 'genre'],
+        attributes: ['groupId', 'name', 'photo', 'creatorId', 'bio', 'genre'],
       });
   
       if (!group) {
