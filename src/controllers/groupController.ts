@@ -225,6 +225,8 @@ export const getGroupsByName = async (req: Request, res: Response) => {
 
 export const getGroupsByGenre = async (req: Request, res: Response) => {
   const { genre } = req.body;
+  const { sort } = req.query;
+
 
   try {
     const queryOptions: any = {};
@@ -235,7 +237,9 @@ export const getGroupsByGenre = async (req: Request, res: Response) => {
       };
       queryOptions.attributes = ["groupId", "photo", "name", "bio"];
     }
-
+    if (sort === "popularity") {
+      queryOptions.order = [["membersCount", "DESC"]];
+    }
     const groups = await Group.findAll(queryOptions);
 
     if (groups.length === 0) {
@@ -304,7 +308,7 @@ export const updateGroupGenre = async (req: Request, res: Response) => {
     })
 
 
-    res.json({ message: "Group genre updated successfully.", group });
+    res.json({ message: "Group genre updated successfully."});
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error updating the group genre.", error });
