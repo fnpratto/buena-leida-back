@@ -299,9 +299,10 @@ export const updateGroupGenre = async (req: Request, res: Response) => {
       res.status(403).json({ message: "Only the group creator can update the genre." });
       return;
     }
+    await group.update({
+      genre: genre
+    })
 
-    group.genre = genre; 
-    await group.save(); 
 
     res.json({ message: "Group genre updated successfully.", group });
   } catch (error) {

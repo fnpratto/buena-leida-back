@@ -23,7 +23,7 @@ router.get('/:groupId/members', getGroupMembers);
 router.patch('/:groupId/update-bio', updateGroupBio);
 router.patch('/:groupId/update-photo', updateGroupPhoto);
 router.delete('/:groupId/remove-group', removeGroup);
-router.put("/:groupId/genre", updateGroupGenre);
+router.patch("/:groupId/update-genre", updateGroupGenre);
 
 
 export default router;
