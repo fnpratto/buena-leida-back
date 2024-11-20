@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import {Group, GroupUser} from '../models/Group';
+import {Group, GroupUsers} from '../models/Group';
 import User from '../models/User'; 
 import { Op } from 'sequelize';
 import { QueryTypes } from 'sequelize';
@@ -9,10 +9,10 @@ import { group } from 'console';
 
 
 export const createGroup = async (req: Request, res: Response) => {
-  const { name, description, creatorId, genre } = req.body;
+  const { name, bio, creatorId, genre } = req.body;
 
   try {
-    if (!name || !description || !creatorId || !genre) {
+    if (!name || !bio || !creatorId || !genre) {
         res.status(400).json({ message: 'Todos los campos son requeridos.' });
         return;
     }
@@ -32,13 +32,13 @@ export const createGroup = async (req: Request, res: Response) => {
     let membersCount = 1;
     const newGroup = await Group.create({
       name,
-      description,
+      bio,
       creatorId,
       genre,
       membersCount
     });
 
-    await sequelize.models.GroupUser.create({
+    await sequelize.models.GroupUsers.create({
       groupId: newGroup.groupId,
       userId: creatorId
     });
@@ -60,7 +60,7 @@ export const getGroupInfo = async (
     try {
       const group = await Group.findOne({
         where: { groupId: groupId },
-        attributes: ['groupId', 'name', 'bio', 'photo', 'creatorId', 'description', 'genre'],
+        attributes: ['groupId', 'name', 'photo', 'creatorId', 'description', 'genre'],
       });
   
       if (!group) {
@@ -123,7 +123,7 @@ export const updateGroupBio = async (req: Request, res: Response) => {
       return;
     }
     if (creatorId != group.creatorId as any){
-      res.status(403).json({ message: "The user who wants to update the group biography isnt the creator."});
+      res.status(403).json({ message: "The user who wants to update the group bio isnt the creator."});
       return;
     }
     group.bio = bio;
@@ -132,7 +132,7 @@ export const updateGroupBio = async (req: Request, res: Response) => {
     res.json({ message: "Bio of group updated successfully"});
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error updating biography.'});
+    res.status(500).json({ message: 'Error updating bio.'});
   }
 };
 

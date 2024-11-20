@@ -5,9 +5,8 @@ import User from "./User";
 class Group extends Model {
   public groupId!: number;
   public name!: string;
-  public description!: string;
-  public creatorId!: number;
   public bio!: string;
+  public creatorId!: number;
   public photo!: string;
   public createdAt!: Date;
   public updatedAt!: Date;
@@ -28,13 +27,9 @@ Group.init(
       allowNull: false,
       unique: true,
     },
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
     bio: {
       type: DataTypes.TEXT,
-      defaultValue: 'Este es un nuevo grupo.',
+      allowNull: false,
     },
     photo: {
       type: DataTypes.STRING,
@@ -61,7 +56,7 @@ Group.init(
 );
 
 
-const GroupUser = sequelize.define("GroupUser", {
+const GroupUsers = sequelize.define("GroupUsers", {
   groupId: {
     type: DataTypes.INTEGER,
     references: {
@@ -82,4 +77,4 @@ const GroupUser = sequelize.define("GroupUser", {
   },
 });
 
-export { Group, GroupUser };
+export { Group, GroupUsers };
