@@ -314,3 +314,90 @@ export const updateGroupGenre = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error updating the group genre.", error });
   }
 };
+export const enterGroup = async (req: Request, res: Response) => {
+  const { groupId, userId } = req.body;
+
+  if (!groupId || !userId) {
+    res.status(400).json({ message: "Group ID and User ID are required." });
+    return;
+  }
+
+  try {
+    const group = await Group.findByPk(groupId);
+    if (!group) {
+      res.status(404).json({ message: "Group not found." });
+      return;
+    }
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      res.status(404).json({ message: "User not found." });
+      return;
+    }
+
+    const existingGroupUser = await GroupUsers.findOne({
+      where: { groupId, userId }
+    });
+
+    if (existingGroupUser) {
+      res.status(400).json({ message: "User is already in the group." });
+      return;
+    }
+
+    await sequelize.models.GroupUsers.create({
+      groupId,
+      userId
+    });
+
+    group.membersCount += 1;
+    await group.save();
+
+    res.status(201).json({ message: "User entered group successfully." });
+  } catch (error) {
+    console.error("Error entering group:", error);
+    res.status(500).json({ message: "An unexpected error occurred." });
+  }
+}
+
+export const leaveGroup = async (req: Request, res: Response) => {
+  const { groupId, userId } = req.body;
+
+  if (!groupId || !userId) {
+    res.status(400).json({ message: "Group ID and User ID are required." });
+    return;
+  }
+
+  try {
+    const group = await Group.findByPk(groupId);
+    if (!group) {
+      res.status(404).json({ message: "Group does not exist." });
+      return;
+    }
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      res.status(404).json({ message: "User does not exist." });
+      return;
+    }
+
+    const existingGroupUser = await GroupUsers.findOne({
+      where: { groupId, userId }
+    });
+
+    if (!existingGroupUser) {
+      res.status(400).json({ message: "User is not in the group." });
+      return;
+    }
+
+    await existingGroupUser.destroy();
+
+    group.membersCount -= 1;
+    await group.save();
+
+    res.json({ message: "User left group successfully." });
+  } catch (error) {
+    console.error("Error leaving group:", error);
+    res.status(500).json({ message: "An unexpected error occurred." });
+  }
+}
+

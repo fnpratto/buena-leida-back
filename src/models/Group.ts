@@ -78,3 +78,4 @@ const GroupUsers = sequelize.define("GroupUsers", {
 });
 
 export { Group, GroupUsers };
+
