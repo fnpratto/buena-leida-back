@@ -67,17 +67,20 @@ export const createUser = async (req: Request, res: Response) => {
 
   if (!name || !email || !password || !username || !favouritegenders) {
     res.status(400).json({ error: "All fields are required." });
+    return;
   }
 
   try {
     const existingUserByEmail = await User.findOne({ where: { email } });
     if (existingUserByEmail) {
       res.status(400).json({ error: "Email is already registered" });
+      return;
     }
 
     const existingUserByUsername = await User.findOne({ where: { username } });
     if (existingUserByUsername) {
       res.status(400).json({ error: "Username is already taken" });
+      return;
     }
 
     const defaultBio = "Bienvenido a mi perfil";
