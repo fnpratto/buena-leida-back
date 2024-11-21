@@ -40,3 +40,6 @@ async function joinUsersToGroups() {
 }
 
 joinUsersToGroups();
+module.exports = joinUsersToGroups;
+
+

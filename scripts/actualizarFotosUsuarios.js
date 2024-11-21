@@ -49,3 +49,5 @@ async function actualizarMultiplesFotosUsuarios() {
 }
 
 actualizarMultiplesFotosUsuarios();
+
+module.exports = actualizarMultiplesFotosUsuarios;

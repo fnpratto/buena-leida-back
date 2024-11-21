@@ -205,3 +205,5 @@ async function agregarVariosLibros() {
 }
 
 agregarVariosLibros();
+
+module.exports = agregarVariosLibros;

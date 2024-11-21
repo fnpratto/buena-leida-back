@@ -130,3 +130,5 @@ async function agregarVariosUsuarios() {
 }
 
 agregarVariosUsuarios();
+
+module.exports = agregarVariosUsuarios;

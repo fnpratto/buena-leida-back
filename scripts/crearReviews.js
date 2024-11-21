@@ -154,3 +154,5 @@ const reviews =  [
       
     
       crearMultiplesReviews();
+
+      module.exports = crearMultiplesReviews;

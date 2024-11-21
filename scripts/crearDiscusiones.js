@@ -53,3 +53,5 @@ async function crearMultiplesDiscusiones() {
 }
 
 crearMultiplesDiscusiones();
+
+module.exports = crearMultiplesDiscusiones;

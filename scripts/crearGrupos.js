@@ -57,3 +57,4 @@ const generosLibros = [
   
 
   crearMultiplesGrupos();
+  module.exports = crearMultiplesGrupos;
