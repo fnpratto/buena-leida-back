@@ -71,7 +71,4 @@ User.init(
   }
 );
 
-User.hasMany(Friendship, { foreignKey: "userId" });
-User.hasMany(Friendship, { foreignKey: "friendId" });
-
 export default User;
