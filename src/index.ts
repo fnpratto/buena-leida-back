@@ -69,6 +69,12 @@ GroupDiscussion.belongsTo(Group, {
   as: "group",
 });
 
+Comment.hasMany(Like, {
+  foreignKey: "reviewId", 
+  constraints: false, 
+});
+
+
 app.use("/users", userRoutes);
 app.use("/books", bookRoutes);
 app.use("/reviews", reviewRoutes);
