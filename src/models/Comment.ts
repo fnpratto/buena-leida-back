@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/db";
+import Like from "./Like";
 
 class Comment extends Model {
   public id!: number;
@@ -35,5 +36,10 @@ Comment.init(
     timestamps: false,
   }
 );
+
+Comment.hasMany(Like, {
+  foreignKey: "reviewId", 
+  constraints: false, 
+});
 
 export default Comment;
