@@ -4,6 +4,7 @@ import {
   getAllFriends,
   createFriendship,
   deleteFriendship,
+  getFriendshipStatus,
 } from "../controllers/friendshipController";
 
 const router = express.Router();
