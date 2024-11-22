@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Friendship from "../models/Friendship";
 import User from "../models/User";
+import FriendRequest from "../models/FriendRequest";
 
 export const areFriends = async (req: Request, res: Response) => {
     const { userId, friendId } = req.params;
@@ -108,6 +109,52 @@ export const deleteFriendship = async (req: Request, res: Response) => {
       res.status(500).json({ message: "Error deleting friendship", error });
     }
 };
-  
+
+export const getFriendshipStatus = async (req: Request, res: Response) => {
+  const { userId, friendId } = req.params;
+
+  if (!userId || !friendId) {
+    return res.status(400).json({ message: "User ID and Friend ID are required." });
+  }
+
+  try {
+    const friendship = await Friendship.findOne({
+      where: {
+        [Op.or]: [
+          { userId, friendId },
+          { userId: friendId, friendId: userId },
+        ],
+      },
+    });
+
+    if (friendship) {
+      return res.status(200).json({ status: "friend", message: "Son amigos." });
+    }
+
+    const friendRequest = await FriendRequest.findOne({
+      where: {
+        [Op.or]: [
+          { senderId: userId, receiverId: friendId },
+          { senderId: friendId, receiverId: userId },
+        ],
+      },
+    });
+
+    if (friendRequest) {
+      return res
+        .status(200)
+        .json({ status: "pending", message: "Existe una solicitud de amistad pendiente." });
+    }
+
+    return res.status(200).json({ status: "not_friend", message: "No son amigos." });
+  } catch (error) {
+    console.error("Error fetching friendship status:", error);
+    return res.status(500).json({
+      message: "An error occurred while checking the friendship status.",
+      error,
+    });
+  }
+};
+
   
   
