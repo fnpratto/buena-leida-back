@@ -1,5 +1,9 @@
 
-
+import { Request, Response } from "express";
+import { Op } from "sequelize";
+import FriendRequest from "../models/FriendRequest"; 
+import User from "../models/User"; 
+import Friendship from "../models/Friendship"; 
 
 
 export const getFriendRequests = async (req: Request, res: Response) => {
@@ -104,8 +108,7 @@ export const rejectFriendRequest = async (req: Request, res: Response) => {
         res.status(404).json({ message: "Solicitud de amistad no encontrada." });
         return;
       }
-  
-      // Eliminar la solicitud de amistad
+
       await friendRequest.destroy();
   
       res.status(200).json({ message: "Solicitud rechazada." });

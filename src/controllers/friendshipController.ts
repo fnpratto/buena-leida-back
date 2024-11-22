@@ -64,25 +64,23 @@ export const createFriendship = async (req: Request, res: Response) => {
         const friend = await User.findByPk(friendId);
 
         if (!user || !friend) {
-        res.status(404).json({ message: "One or both users not found." });
+        res.status(404).json({ message: "Uno o ambos usuarios no encontrados." });
         return;
         }
 
-        // Verifica si ya son amigos
         const existingFriendship = await Friendship.findOne({
         where: { userId, friendId },
         });
 
         if (existingFriendship) {
-        res.status(400).json({ message: "Users are already friends." });
+        res.status(400).json({ message: "Usuarios ya son amigos." });
         return;
         }
 
-        // Crear relaciones de amistad bidireccionales
         await Friendship.create({ userId, friendId });
         await Friendship.create({ userId: friendId, friendId: userId });
 
-        res.status(201).json({ message: "Friendship created successfully." });
+        res.status(201).json({ message: "Amistad creada." });
     } catch (error) {
         console.error("Error creating friendship:", error);
         res.status(500).json({ message: "Error creating friendship", error });
@@ -97,15 +95,14 @@ export const deleteFriendship = async (req: Request, res: Response) => {
       const friendship2 = await Friendship.findOne({ where: { userId: friendId, friendId: userId } });
   
       if (!friendship1 || !friendship2) {
-        res.status(404).json({ message: "Friendship not found." });
+        res.status(404).json({ message: "Amistad no encontrada." });
         return;
       }
   
-      // Eliminar ambas relaciones de amistad
       await friendship1.destroy();
       await friendship2.destroy();
   
-      res.status(200).json({ message: "Friendship deleted successfully." });
+      res.status(200).json({ message: "Amistad borrada." });
     } catch (error) {
       console.error("Error deleting friendship:", error);
       res.status(500).json({ message: "Error deleting friendship", error });
