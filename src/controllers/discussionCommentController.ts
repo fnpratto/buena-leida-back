@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Comment from "../models/Comment";
+import Comment from "../models/DiscussionComment";
 import Like from "../models/Like";
 import { GroupDiscussion } from "../models/GroupDiscussion";
 import User from "../models/User";

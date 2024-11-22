@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { createGroupDiscussion,
     getDiscussions
 } from '../controllers/groupDiscussionController';
-import { createComment, getComments, likeComment } from "../controllers/commentController";
+import { createComment, getComments, likeComment } from "../controllers/discussionCommentController";
 
 const router = Router();
 
