@@ -13,7 +13,7 @@ const fotosUsuarios = [
     { userId: 8, profilePhoto: "https://firebasestorage.googleapis.com/v0/b/buena-leida.appspot.com/o/profiles%2Fprofiles_json%2Fmarilop.jpeg?alt=media&token=3eb46649-68c2-4173-aa98-587bd34734b1" },
     { userId: 9, profilePhoto: "https://firebasestorage.googleapis.com/v0/b/buena-leida.appspot.com/o/profiles%2Fprofiles_json%2Frodrisal.jpeg?alt=media&token=b5084375-e20f-4da8-95bb-ed6905816c1b" },
     { userId: 10, profilePhoto: "https://firebasestorage.googleapis.com/v0/b/buena-leida.appspot.com/o/profiles%2Fprofiles_json%2Fvaleherr.jpeg?alt=media&token=4988f69b-d048-451b-a2ac-302b1c2f739c" },
-    { userId: 11, profilePhoto: "https://firebasestorage.googleapis.com/v0/b/buena-leida.appspot.com/o/profiles%2Fprofiles_json%2Fsofiacast.jpeg?alt=media&token=b31379b5-ad79-4205-8ab8-f1bf00c141a6" },
+    // { userId: 11, profilePhoto: "https://firebasestorage.googleapis.com/v0/b/buena-leida.appspot.com/o/profiles%2Fprofiles_json%2Fsofiacast.jpeg?alt=media&token=b31379b5-ad79-4205-8ab8-f1bf00c141a6" },
 ];
 
 

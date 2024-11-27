@@ -66,31 +66,31 @@ const reviews =  [
       },
       {
         "isbn": 105,
-        "iduser": 11,
+        "iduser": 10,
         "calification": 5,
         "texto": "Una historia conmovedora que muestra la inocencia en medio del horror. Absolutamente impactante."
       },
       {
         "isbn": 105,
-        "iduser": 12,
+        "iduser": 10,
         "calification": 4,
         "texto": "Profundamente triste pero muy significativo. Un libro que todos deberían leer."
       },
       {
         "isbn": 106,
-        "iduser": 13,
+        "iduser": 10,
         "calification": 4,
         "texto": "Hermosa narrativa y personajes bien construidos. Una lectura emotiva."
       },
       {
         "isbn": 106,
-        "iduser": 14,
+        "iduser": 10,
         "calification": 3,
         "texto": "Bonita historia, aunque el desarrollo puede ser lento en algunos capítulos."
       },
       {
         "isbn": 107,
-        "iduser": 15,
+        "iduser": 10,
         "calification": 5,
         "texto": "Un libro lleno de emociones y reflexiones sobre la vida y la muerte. Muy recomendable."
       },
