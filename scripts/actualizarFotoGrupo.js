@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const apiUrl = 'http://localhost:3000';
+const apiUrl = 'https://buena-leida-back-kamk.onrender.com';
 
 const fotosGrupo = [
     { groupId: 1, groupPhoto: 'https://firebasestorage.googleapis.com/v0/b/buena-leida.appspot.com/o/groups%2Fgcienciaficsion.jpeg?alt=media&token=0399ad7f-0361-4371-b873-cc9522cc5fcf', creatorId: 1 },
