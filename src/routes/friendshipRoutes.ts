@@ -4,16 +4,14 @@ import {
   getAllFriends,
   createFriendship,
   deleteFriendship,
-  getFriendshipStatus,
 } from "../controllers/friendshipController";
 
 const router = express.Router();
 
-router.get("/friends/:userId/:friendId", areFriends);
-router.get("/friends/:userId", getAllFriends);
+router.get("/friends/:userid/:friendId", areFriends);
+router.get("/friends/:userid", getAllFriends);
 router.post("/friends", createFriendship);
 router.delete("/friends", deleteFriendship);
-router.get("/friends/status/:userId/:friendId", getFriendshipStatus);
 
 
 export default router;

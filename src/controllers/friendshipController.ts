@@ -4,13 +4,13 @@ import User from "../models/User";
 import FriendRequest from "../models/FriendRequest";
 
 export const areFriends = async (req: Request, res: Response) => {
-    const { userId, friendId } = req.params;
+    const { userid, friendid } = req.params;
   
     try {
       const friendship = await Friendship.findOne({
         where: {
-          userId,
-          friendId,
+          userid,
+          friendid,
         },
       });
   
@@ -27,30 +27,33 @@ export const areFriends = async (req: Request, res: Response) => {
 };
 
 export const getAllFriends = async (req: Request, res: Response) => {
-    const { userId } = req.params;
+    const { userid } = req.params;
   
     try {
       const friendships = await Friendship.findAll({
-        where: { userId },
-        include: [
-          {
-            model: User,
-            as: "friend",
-            attributes: ["id", "username", "name", "profilePhoto"],
-          },
-        ],
-        attributes: ["id", "createdAt"],
+        where: { userid: Number(userid) },
       });
+
+      const friendshipUsersIds = friendships.map((friendships) => friendships.friendid);
+
+      const friendsUsers = await User.findAll({
+        where: { id: friendshipUsersIds },
+        attributes: ["id", "username", "name", "profilePhoto"],
+      });
+        const friendshipsWithDetails = friendships.map((friendship) => {
+            const friendUser = friendsUsers.find((user) => user.id === friendship.friendid);
+            return {
+              friendship: friendship.id,
+              friend: friendUser ? { 
+                id: friendUser.id,
+                username: friendUser.username, 
+                name: friendUser.name, 
+                profilePhoto: friendUser.profilePhoto 
+              } : null,
+            };
+          });
   
-      const friends = friendships.map((friendship) => ({
-        id: friendship.friend.id,
-        username: friendship.friend.username,
-        name: friendship.friend.name,
-        profilePhoto: friendship.friend.profilePhoto,
-        friendshipDate: friendship.createdAt,
-      }));
-  
-      res.status(200).json(friends);
+      res.status(200).json(friendshipsWithDetails);
     } catch (error) {
       console.error("Error fetching friends:", error);
       res.status(500).json({ message: "Error fetching friends", error });
@@ -58,11 +61,11 @@ export const getAllFriends = async (req: Request, res: Response) => {
 };
 
 export const createFriendship = async (req: Request, res: Response) => {
-    const { userId, friendId } = req.body;
+    const { userid, friendid } = req.body;
 
     try {
-        const user = await User.findByPk(userId);
-        const friend = await User.findByPk(friendId);
+        const user = await User.findByPk(userid);
+        const friend = await User.findByPk(friendid);
 
         if (!user || !friend) {
         res.status(404).json({ message: "Uno o ambos usuarios no encontrados." });
@@ -70,7 +73,7 @@ export const createFriendship = async (req: Request, res: Response) => {
         }
 
         const existingFriendship = await Friendship.findOne({
-        where: { userId, friendId },
+        where: { userid, friendid },
         });
 
         if (existingFriendship) {
@@ -78,8 +81,8 @@ export const createFriendship = async (req: Request, res: Response) => {
         return;
         }
 
-        await Friendship.create({ userId, friendId });
-        await Friendship.create({ userId: friendId, friendId: userId });
+        await Friendship.create({ userid, friendid });
+        await Friendship.create({ userid: friendid, friendid: userid });
 
         res.status(201).json({ message: "Amistad creada." });
     } catch (error) {
@@ -89,11 +92,11 @@ export const createFriendship = async (req: Request, res: Response) => {
 };
 
 export const deleteFriendship = async (req: Request, res: Response) => {
-    const { userId, friendId } = req.body;
+    const { userid, friendid } = req.body;
   
     try {
-      const friendship1 = await Friendship.findOne({ where: { userId, friendId } });
-      const friendship2 = await Friendship.findOne({ where: { userId: friendId, friendId: userId } });
+      const friendship1 = await Friendship.findOne({ where: { userid, friendid } });
+      const friendship2 = await Friendship.findOne({ where: { userid: friendid, friendId: userid } });
   
       if (!friendship1 || !friendship2) {
         res.status(404).json({ message: "Amistad no encontrada." });
@@ -109,52 +112,3 @@ export const deleteFriendship = async (req: Request, res: Response) => {
       res.status(500).json({ message: "Error deleting friendship", error });
     }
 };
-
-export const getFriendshipStatus = async (req: Request, res: Response) => {
-  const { userId, friendId } = req.params;
-
-  if (!userId || !friendId) {
-    return res.status(400).json({ message: "User ID and Friend ID are required." });
-  }
-
-  try {
-    const friendship = await Friendship.findOne({
-      where: {
-        [Op.or]: [
-          { userId, friendId },
-          { userId: friendId, friendId: userId },
-        ],
-      },
-    });
-
-    if (friendship) {
-      return res.status(200).json({ status: "friend", message: "Son amigos." });
-    }
-
-    const friendRequest = await FriendRequest.findOne({
-      where: {
-        [Op.or]: [
-          { senderId: userId, receiverId: friendId },
-          { senderId: friendId, receiverId: userId },
-        ],
-      },
-    });
-
-    if (friendRequest) {
-      return res
-        .status(200)
-        .json({ status: "pending", message: "Existe una solicitud de amistad pendiente." });
-    }
-
-    return res.status(200).json({ status: "not_friend", message: "No son amigos." });
-  } catch (error) {
-    console.error("Error fetching friendship status:", error);
-    return res.status(500).json({
-      message: "An error occurred while checking the friendship status.",
-      error,
-    });
-  }
-};
-
-  
-  

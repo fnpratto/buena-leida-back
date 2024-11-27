@@ -14,7 +14,10 @@ import Book from "./models/Book";
 import User from "./models/User";
 import { Group } from "./models/Group";
 import { GroupDiscussion } from "./models/GroupDiscussion";
+import friendshipRoutes from "./routes/friendshipRoutes";
+import Friendship from "./models/Friendship";  
 import Comment from "./models/DiscussionComment";
+import friendRequestRoutes from "./routes/friendRequestRoutes";
 
 dotenv.config();
 
@@ -49,6 +52,12 @@ User.belongsToMany(Group, {
   as: "groups",
 });
 
+User.belongsToMany(User, {
+  through: Friendship,
+  as: "friends",
+  foreignKey: "userid",
+  otherKey: "friendid",
+});
 
 Group.belongsToMany(User, {
   through: "GroupUsers",
@@ -71,6 +80,12 @@ GroupDiscussion.belongsTo(Group, {
   as: "group",
 });
 
+User.hasMany(Friendship, { foreignKey: "userid" });
+User.hasMany(Friendship, { foreignKey: "friendid" });
+Friendship.belongsTo(User, { foreignKey: 'userid', as: 'User' });   // Relación con el usuario
+Friendship.belongsTo(User, { foreignKey: 'friendid', as: 'Friend' }); // Relación con el amigo
+
+
 Comment.belongsTo(User, { foreignKey: 'iduser', as: 'user' });
 User.hasMany(Comment, { foreignKey: 'iduser', as: 'comments' });
 
@@ -81,9 +96,8 @@ app.use("/bookshelf", bookShelfController);
 app.use("/readingstate", require("./routes/readingStateRoutes").default);
 app.use("/groups", groupRoutes);
 app.use("/discussions", groupDiscussionRoutes);
-
-
-
+app.use("/friendships", friendshipRoutes);
+app.use("/friend-requests", friendRequestRoutes);
 // Sync the models with the database and start the server
 sequelize
   .sync()

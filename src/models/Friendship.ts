@@ -4,8 +4,8 @@ import User from "./User";
 
 class Friendship extends Model {
   public id!: number;
-  public userId!: number;
-  public friendId!: number;
+  public userid!: number;
+  public friendid!: number;
   public createdAt!: Date;
 }
 
@@ -16,7 +16,7 @@ Friendship.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    userId: {
+    userid: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -24,7 +24,7 @@ Friendship.init(
         key: "id",
       },
     },
-    friendId: {
+    friendid: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
