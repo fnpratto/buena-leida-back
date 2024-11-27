@@ -79,6 +79,7 @@ GroupDiscussion.belongsTo(Group, {
   as: "group",
 });
 
+
 User.hasMany(Friendship, { foreignKey: "userId" });
 User.hasMany(Friendship, { foreignKey: "friendId" });
 Friendship.belongsTo(User, { foreignKey: "userId" });
