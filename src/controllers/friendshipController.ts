@@ -9,8 +9,8 @@ export const areFriends = async (req: Request, res: Response) => {
     try {
       const friendship = await Friendship.findOne({
         where: {
-          userid,
-          friendid,
+          userid: Number(userid),
+          friendid: Number(friendid),
         },
       });
   
@@ -31,7 +31,7 @@ export const getAllFriends = async (req: Request, res: Response) => {
   
     try {
       const friendships = await Friendship.findAll({
-        where: { userid: Number(userid) },
+        where: { userid: Number(userid), },
       });
 
       const friendshipUsersIds = friendships.map((friendships) => friendships.friendid);
