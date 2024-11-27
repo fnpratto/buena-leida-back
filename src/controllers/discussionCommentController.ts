@@ -7,10 +7,10 @@ import {Group} from "../models/Group";
 
 export const createComment = async (req: Request, res: Response) => {
   const { groupId, discussionId } = req.params;
-  const { userId, text } = req.body;
+  const { iduser, texto } = req.body;
 
-  console.log("Se creó comentario en la discusión:", discussionId, "por:", userId);
-  if (!text) {
+  console.log("Se creó comentario en la discusión:", discussionId, "por:", iduser);
+  if (!texto) {
     res.status(400).json({ message: "Debe ingresarse un texto en el comentario. " });
     return;
   }
@@ -23,7 +23,7 @@ export const createComment = async (req: Request, res: Response) => {
       return;
     }
 
-    const user = await User.findByPk(userId);
+    const user = await User.findByPk(iduser);
     if (!user) {
       res.status(404).json({ message: "El usuario no existe." });
       return;
@@ -36,9 +36,9 @@ export const createComment = async (req: Request, res: Response) => {
     }
 
     const comment = await Comment.create({
-      userId,
+      iduser,
       discussionId,
-      text,
+      texto,
     });
 
     res.status(201).json(comment);
@@ -78,10 +78,11 @@ export const getComments = async (req: Request, res: Response) => {
       include: [
         {
           model: User,
+          as: 'user',
           attributes: ["id", "username", "name", "profilePhoto"],
         },
       ],
-      attributes: ["commentId", "text", "userId", "createdAt"],
+      attributes: ["id", "texto", "iduser", "createdAt"],
     });
 
     res.status(200).json(comments);

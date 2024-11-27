@@ -4,7 +4,7 @@ import sequelize from "../config/db";
 class Comment extends Model {
   public id!: number;
   public iduser!: number;
-  public idreview!: number;
+  public discussionId!: number;
   public texto!: string;
 }
 
@@ -19,7 +19,7 @@ Comment.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    idreview: {
+    discussionId: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -31,7 +31,7 @@ Comment.init(
   {
     sequelize,
     modelName: "Comment",
-    tableName: "comments",
+    tableName: "Comments",
     timestamps: false,
   }
 );
