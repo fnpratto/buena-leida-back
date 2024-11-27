@@ -92,12 +92,21 @@ export const createFriendship = async (req: Request, res: Response) => {
 };
 
 export const deleteFriendship = async (req: Request, res: Response) => {
-    const { userid, friendid } = req.body;
+  const { userid, friendid } = req.params;
   
     try {
-      const friendship1 = await Friendship.findOne({ where: { userid, friendid } });
-      const friendship2 = await Friendship.findOne({ where: { userid: friendid, friendId: userid } });
-  
+      const friendship1 = await Friendship.findOne({
+        where: {
+          userid: Number(userid),
+          friendid: Number(friendid),
+        },
+      });
+      const friendship2 = await Friendship.findOne({
+        where: {
+          userid: Number(friendid),
+          friendid: Number(userid),
+        },
+      });
       if (!friendship1 || !friendship2) {
         res.status(404).json({ message: "Amistad no encontrada." });
         return;

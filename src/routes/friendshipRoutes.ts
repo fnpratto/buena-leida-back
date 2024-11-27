@@ -10,8 +10,8 @@ const router = express.Router();
 
 router.get("/friends/:userid/:friendid", areFriends);
 router.get("/friends/:userid", getAllFriends);
-router.post("/friends", createFriendship);
-router.delete("/friends", deleteFriendship);
+router.post("/friends/:userid/:friendid", createFriendship);
+router.delete("/friends/:userid/:friendid", deleteFriendship);
 
 
 export default router;
