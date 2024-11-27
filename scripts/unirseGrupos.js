@@ -3,7 +3,7 @@ const axios = require('axios');
 const groups = [1, 2, 3];  
 const users = [1, 2, 3, 4, 5];  
 
-const apiUrl = 'http://localhost:3000/groups/enterGroup';  
+const apiUrl = 'https://buena-leida-back-kamk.onrender.com/groups/enterGroup';  
 
 async function joinUsersToGroups() {
   for (let userId of users) {

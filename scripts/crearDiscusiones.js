@@ -2,7 +2,7 @@
 
 const axios = require('axios');
 
-const apiUrl = 'http://localhost:3000/discussions/{groupId}/create-discussion/';  
+const apiUrl = 'https://buena-leida-back-kamk.onrender.com/discussions/{groupId}/create-discussion/';  
 
 const discusiones = [
     { name: 'Ciencia Ficción - Debate sobre nuevos libros', creatorId: 1, groupId: 1 },

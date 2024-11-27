@@ -1,6 +1,6 @@
 const axios = require("axios");
 
-const apiUrl = "http://localhost:3000";
+const apiUrl = "https://buena-leida-back-kamk.onrender.com";
 
 const fotosUsuarios = [ 
     { userId: 1, profilePhoto: "https://firebasestorage.googleapis.com/v0/b/buena-leida.appspot.com/o/profiles%2Fprofiles_json%2Fcamilarios.jpeg?alt=media&token=d2f3cebf-a8b4-4983-b010-8830eb917709" },

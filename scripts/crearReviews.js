@@ -1,6 +1,6 @@
 
 const axios = require('axios');
-const apiUrl = 'http://localhost:3000/reviews/review'; 
+const apiUrl = 'https://buena-leida-back-kamk.onrender.com/reviews/review'; 
 
 
 const reviews =  [
