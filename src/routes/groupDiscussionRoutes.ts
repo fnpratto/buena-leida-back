@@ -5,9 +5,7 @@ import { createGroupDiscussion,
 
 const router = Router();
 
-
 router.post('/:groupId/create-discussion/', createGroupDiscussion);
 router.get('/:groupId', getDiscussions);
-
 
 export default router;
