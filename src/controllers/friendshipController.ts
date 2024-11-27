@@ -64,8 +64,8 @@ export const createFriendship = async (req: Request, res: Response) => {
     const { userid, friendid } = req.body;
 
     try {
-        const user = await User.findByPk(userid);
-        const friend = await User.findByPk(friendid);
+        const user = await User.findByPk(Number(userid));
+        const friend = await User.findByPk(Number(friendid));
 
         if (!user || !friend) {
         res.status(404).json({ message: "Uno o ambos usuarios no encontrados." });
@@ -92,7 +92,7 @@ export const createFriendship = async (req: Request, res: Response) => {
 };
 
 export const deleteFriendship = async (req: Request, res: Response) => {
-  const { userid, friendid } = req.params;
+  const { userid, friendid } = req.body;
   
     try {
       const friendship1 = await Friendship.findOne({
