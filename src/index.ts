@@ -18,6 +18,7 @@ import friendshipRoutes from "./routes/friendshipRoutes";
 import Friendship from "./models/Friendship";  
 import Comment from "./models/DiscussionComment";
 import friendRequestRoutes from "./routes/friendRequestRoutes";
+import FriendRequest from "./models/FriendRequest";
 
 dotenv.config();
 
@@ -82,8 +83,9 @@ GroupDiscussion.belongsTo(Group, {
 
 User.hasMany(Friendship, { foreignKey: "userid" });
 User.hasMany(Friendship, { foreignKey: "friendid" });
-Friendship.belongsTo(User, { foreignKey: 'userid', as: 'User' });   // Relación con el usuario
-Friendship.belongsTo(User, { foreignKey: 'friendid', as: 'Friend' }); // Relación con el amigo
+Friendship.belongsTo(User, { foreignKey: 'userid', as: 'User' });   
+Friendship.belongsTo(User, { foreignKey: 'friendid', as: 'Friend' }); 
+FriendRequest.belongsTo(User, { foreignKey: 'receiverid'});  
 
 
 Comment.belongsTo(User, { foreignKey: 'iduser', as: 'user' });

@@ -8,9 +8,9 @@ import {
 
 const router = express.Router();
 
-router.post("/friend-requests", sendFriendRequest);
-router.get("/friend-requests/:userId", getFriendRequests);
-router.post("/friend-requests/:friendRequestId/accept", acceptFriendRequest);
-router.delete("/friend-requests/:friendRequestId", rejectFriendRequest);
+router.post("/request", sendFriendRequest);
+router.get("/:receiverid", getFriendRequests);
+router.post("/:friendRequestId/accept", acceptFriendRequest);
+router.delete("/:friendRequestId/delete", rejectFriendRequest);
 
 export default router;

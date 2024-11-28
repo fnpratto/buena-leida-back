@@ -4,8 +4,8 @@ import User from "./User";
 
 class FriendRequest extends Model {
   public id!: number;
-  public senderId!: number;
-  public receiverId!: number;
+  public senderid!: number;
+  public receiverid!: number;
   public createdAt!: Date; 
 }
 
@@ -16,7 +16,7 @@ FriendRequest.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    senderId: {
+    senderid: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -24,7 +24,7 @@ FriendRequest.init(
         key: "id",
       },
     },
-    receiverId: {
+    receiverid: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
