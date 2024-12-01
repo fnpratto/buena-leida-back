@@ -302,3 +302,30 @@ export const getAllGenres = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error fetching genres", error });
   }
 };
+
+
+export const getTop6Books = async (req: Request, res: Response) => {
+  try {
+    const queryOptions: any = {
+      order: [["averagerating", "DESC"]], 
+      limit: 6, 
+    };
+
+    const books = await Book.findAll(queryOptions);
+
+    if (!books || books.length === 0) {
+      res.status(404).json({ message: "No books found" });
+      return;
+    }
+
+    res.json(books);
+  } catch (error) {
+    
+    console.error("Error fetching book data:", error);
+
+    res.status(500).json({
+      message: "Error fetching book data",
+      error: error instanceof Error ? error.message : error,
+    });
+  }
+};

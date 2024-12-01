@@ -3,11 +3,11 @@ import {
   getBooks,
   createBooks,
   getBookById,
-  getBookByTitleAndAuthor,
   getBookByAuthor,
   getBookByName,
   getRatingsCountByISBN,
   getBookByGenre,
+  getTop6Books,
   getAllGenres,
 } from "../controllers/bookController";
 
@@ -19,6 +19,7 @@ router.get("/:id", getBookById);
 router.get("/title/:title", getBookByName);
 router.get("/author/:author", getBookByAuthor);
 router.get("/genre/:genre", getBookByGenre);
+router.get("/top",getTop6Books)
 
 router.post("/", createBooks);
 

@@ -19,6 +19,7 @@ import Friendship from "./models/Friendship";
 import Comment from "./models/DiscussionComment";
 import friendRequestRoutes from "./routes/friendRequestRoutes";
 import FriendRequest from "./models/FriendRequest";
+import homeRoutes from "./routes/homeRoutes";
 
 dotenv.config();
 
@@ -100,6 +101,8 @@ app.use("/groups", groupRoutes);
 app.use("/discussions", groupDiscussionRoutes);
 app.use("/friendships", friendshipRoutes);
 app.use("/friend-requests", friendRequestRoutes);
+app.use("/home", homeRoutes);
+
 // Sync the models with the database and start the server
 sequelize
   .sync()
