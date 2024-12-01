@@ -6,6 +6,7 @@ import { QueryTypes } from 'sequelize';
 import sequelize from "../config/db";
 import { GroupDiscussion } from '../models/GroupDiscussion';
 import { group } from 'console';
+import { literal } from "sequelize";
 
 
 export const createGroup = async (req: Request, res: Response) => {
@@ -406,3 +407,27 @@ export const leaveGroup = async (req: Request, res: Response) => {
   }
 }
 
+export const getRandomGroups = async (req: Request, res: Response) => {
+  try {
+
+    const groups = await Group.findAll({
+      attributes: [
+        "groupId",
+        "name",
+        "photo",
+      ],
+      order: literal("RANDOM()"), 
+      limit: 6, 
+    });
+
+    if (!groups || groups.length === 0) {
+      res.status(404).json({ message: "No groups found" });
+      return;
+    }
+
+    res.json(groups);
+  } catch (error) {
+    console.error("Error fetching random groups:", error);
+    res.status(500).json({ message: "Error fetching random groups", error });
+  }
+};
