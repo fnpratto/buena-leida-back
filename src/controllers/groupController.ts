@@ -411,12 +411,6 @@ export const getRandomGroups = async (req: Request, res: Response) => {
   try {
 
     const groups = await Group.findAll({
-      attributes: [
-        "groupId",
-        "name",
-        "photo",
-        "bio",
-      ],
       order: literal("RANDOM()"), 
       limit: 6, 
     });
