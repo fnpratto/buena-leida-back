@@ -5,6 +5,27 @@ import FriendRequest from "../models/FriendRequest";
 import User from "../models/User"; 
 import Friendship from "../models/Friendship"; 
 
+export const getRequest = async (req: Request, res: Response) => {
+  const { senderid, receiverid } = req.params;
+
+  try {
+    const request = await FriendRequest.findOne({
+      where: { receiverid: Number(receiverid), 
+        senderid: Number(senderid)
+       },
+    });
+
+    if (!request) {
+      res.status(404).json({ message: "No se envio solicitud." });
+      return;
+    }
+
+    res.status(200).json(request);
+  } catch (error) {
+    console.error("Error fetching friend requests:", error);
+    res.status(500).json({ message: "Error fetching friend requests", error });
+  }
+};
 
 export const getFriendRequests = async (req: Request, res: Response) => {
     const { receiverid } = req.params;
