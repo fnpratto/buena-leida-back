@@ -80,7 +80,6 @@ export const getAllFriends = async (req: Request, res: Response) => {
 
       const friendsUsers = await User.findAll({
         where: { id: friendshipUsersIds },
-        attributes: ["id", "username", "name", "profilePhoto"],
       });
         const friendshipsWithDetails = friendships.map((friendship) => {
             const friendUser = friendsUsers.find((user) => user.id === friendship.friendid);

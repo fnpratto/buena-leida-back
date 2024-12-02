@@ -10,8 +10,8 @@ import {
 const router = express.Router();
 
 router.get("/friends/:userid/:friendid", areFriends);
-router.get("/:userid/:friendid", getFriendshipState);
-router.get("/friends/:userid", getAllFriends);
+router.get("/:userid/:friendid/state", getFriendshipState);
+router.get("/all/:userid", getAllFriends);
 router.post("/friends", createFriendship);
 router.delete("/:userid/:friendid/delete", deleteFriendship);
 
