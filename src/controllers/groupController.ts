@@ -415,6 +415,7 @@ export const getRandomGroups = async (req: Request, res: Response) => {
         "groupId",
         "name",
         "photo",
+        "bio"
       ],
       order: literal("RANDOM()"), 
       limit: 6, 
