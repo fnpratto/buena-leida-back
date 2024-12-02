@@ -50,7 +50,7 @@ export const getDiscussions = async (req: Request, res: Response) => {
         };
         const discussions = await GroupDiscussion.findAll({
             where: {groupId: groupId},
-            attributes: ["discussionId", "name", "creatorId"]
+            attributes: ["groupId", "discussionId", "name", "creatorId"]
         });
         if (discussions.length === 0){
             res.status(404).json({ message: "No discussions found for the group." });
@@ -66,6 +66,7 @@ export const getDiscussions = async (req: Request, res: Response) => {
             const creatorUser = creatorUsers.find((user) => user.id === discussion.creatorId);
             return {
               discussionId: discussion.discussionId,
+              groupId: discussion.groupId,
               name: discussion.name,
               creatorUser: creatorUser ? { 
                 username: creatorUser.username, 
