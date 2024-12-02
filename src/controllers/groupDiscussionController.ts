@@ -50,7 +50,6 @@ export const getDiscussions = async (req: Request, res: Response) => {
         };
         const discussions = await GroupDiscussion.findAll({
             where: {groupId: groupId},
-            attributes: ["groupId", "discussionId", "name", "creatorId"]
         });
         if (discussions.length === 0){
             res.status(404).json({ message: "No discussions found for the group." });
