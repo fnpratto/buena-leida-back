@@ -6,7 +6,7 @@ import User from "../models/User";
 import {Group} from "../models/Group";
 
 export const createComment = async (req: Request, res: Response) => {
-  const { groupId, discussionId } = req.params;
+  const { discussionId } = req.params;
   const { iduser, texto } = req.body;
 
   console.log("Se creó comentario en la discusión:", discussionId, "por:", iduser);
@@ -17,7 +17,13 @@ export const createComment = async (req: Request, res: Response) => {
 
   try {
 
-    const group = await Group.findByPk(groupId);
+    const discussion = await GroupDiscussion.findByPk(discussionId);
+    if (!discussion) {
+      res.status(404).json({ message: "El tópico de discusión no existe." });
+      return;
+    }
+
+    const group = await Group.findByPk(discussion.groupId);
     if (!group) {
       res.status(404).json({ message: "El Grupo no existe." });
       return;
@@ -26,12 +32,6 @@ export const createComment = async (req: Request, res: Response) => {
     const user = await User.findByPk(iduser);
     if (!user) {
       res.status(404).json({ message: "El usuario no existe." });
-      return;
-    }
-
-    const discussion = await GroupDiscussion.findByPk(discussionId);
-    if (!discussion) {
-      res.status(404).json({ message: "El tópico de discusión no existe." });
       return;
     }
 
@@ -49,30 +49,28 @@ export const createComment = async (req: Request, res: Response) => {
 };
 
 export const getComments = async (req: Request, res: Response) => {
-  const { groupId, discussionId } = req.params;
+  const { discussionId } = req.params;
 
-  if (!groupId || !discussionId) {
-    res.status(400).json({ message: "El tópico y grupo de discusión es un parametro obligatorio." });
+  if (!discussionId) {
+    res.status(400).json({ message: "El tópico es un parametro obligatorio." });
     return;
   }
 
   try {
-
-    const group = await Group.findByPk(groupId);
-    if (!group) {
-      res.status(404).json({ message: "No se encontró el grupo de discusión." });
-      return;
-    }
-
     const discussion = await GroupDiscussion.findOne({
-      where: { discussionId, groupId },
+      where: { discussionId },
     });
     if (!discussion) {
       res.status(404).json({ message: "No se encontró el tópico de discusión." });
       return;
     }
 
-  
+    const group = await Group.findByPk(discussion.groupId);
+    if (!group) {
+      res.status(404).json({ message: "No se encontró el grupo de discusión." });
+      return;
+    }
+
     const comments = await Comment.findAll({
       where: { discussionId: discussionId },
       include: [
