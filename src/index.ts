@@ -25,13 +25,14 @@ dotenv.config();
 
 const app = express();
 
-app.use(
-  cors({
-    origin: ["https://buena-leida-ui.vercel.app", "http://localhost:5173"],
-    methods: ["GET", "POST", "PATCH", "OPTIONS", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+const corsOptions = cors({
+  origin: ["https://buena-leida-ui.vercel.app", "http://localhost:5173"],
+  methods: ["GET", "POST", "PATCH", "OPTIONS", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+})
+
+app.use(corsOptions);
+app.options("*", corsOptions);
 
 app.use(express.json());
 
